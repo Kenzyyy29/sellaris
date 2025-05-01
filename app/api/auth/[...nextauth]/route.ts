@@ -1,59 +1,81 @@
-import NextAuth from "next-auth";
+import { login } from "@/lib/utils/service";
+import { compare } from "bcryptjs";
+import { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import User from "@/lib/models/User";
-import connectToDB from "@/lib/utils/db";
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
+    session: {
+        strategy: "jwt",
+        maxAge: 24 * 60 * 60, // 1 hari
+    },
+    secret: process.env.NEXTAUTH_SECRET!,
     providers: [
         CredentialsProvider({
-            name: "Credentials",
             type: "credentials",
+            name: "Credentials",
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                await connectToDB();
+                if (!credentials?.email) {
+                    throw new Error("Email diperlukan");
+                }
+                
+                const user = await login({ email: credentials.email });
+                if (!user) {
+                    throw new Error("User tidak ditemukan");
+                }
+                if (!credentials.password && user.verified) {
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.fullname,
+                        role: user.role,
+                    };
+                }
+                if (credentials.password) {
+                    const passwordMatch = await compare(credentials.password, user.password);
+                    if (!passwordMatch) {
+                        throw new Error("Password salah");
+                    }
+                }
 
-                const user = await User.findOne({ email: credentials?.email });
-                if (!user) return null
-
-                const isValid = await bcrypt.compare(credentials?.password || "", user.password);
-                if (!isValid) return null
-
-                if (!user.isVerified) {
-                    throw new Error("User is not verified");
+                if (!user.verified) {
+                    throw new Error("Akun belum terverifikasi");
                 }
 
                 return {
                     id: user.id,
-                    name: user.name,
                     email: user.email,
-                    role: user.role || "user"
-                }
-            }
-        })
+                    name: user.fullname,
+                    role: user.role,
+                };
+            },
+        }),
     ],
     callbacks: {
-        jwt: async ({ token, user }) => {
+        async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;
             }
-            return token
+            return token;
         },
-        session: async ({ session, token }) => {
-            if (token) {
+        async session({ session, token }) {
+            if (session.user) {
                 session.user.id = token.id;
                 session.user.role = token.role;
-            } return session
-        }
-    }, pages: {
-        signIn: "/login"
+            }
+            return session;
+        },
     },
-    secret: process.env.NEXTAUTH_SECRET
-}
+    pages: {
+        signIn: "/login",
+        error: "/login",
+    },
+};
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST }
+export { handler as GET, handler as POST };

@@ -1,46 +1,50 @@
-import  connectToDB  from "@/lib/utils/db";
-import User from "@/lib/models/User";
+import { sendVerificationEmail } from "@/lib/actions/email";
+import { getDocs, query, collection, where, updateDoc } from "firebase/firestore";
+import { firestore } from "@/lib/firebase/init";
 import { NextResponse } from "next/server";
-import { sendOTP } from "@/lib/actions/email";
 
 export async function POST(request: Request) {
+    const { email } = await request.json();
+
     try {
-        await connectToDB();
+        // Check if user exists in temp_users
+        const q = query(
+            collection(firestore, "temp_users"),
+            where("email", "==", email)
+        );
+        const snapshot = await getDocs(q);
 
-        const { email } = await request.json();
-
-        // Find user
-        const user = await User.findOne({ email });
-        if (!user) {
+        if (snapshot.empty) {
             return NextResponse.json(
-                { message: "User tidak ditemukan" },
-                { status: 404 }
+                { status: false, message: "User not found or OTP expired" },
+                { status: 400 }
             );
         }
 
+        const userDoc = snapshot.docs[0];
+        const userData = userDoc.data();
+
         // Generate new OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-        // Update user with new OTP
-        await User.findOneAndUpdate(
-            { email },
-            {
-                otp,
-                otpExpiry,
-            }
-        );
+        // Update the OTP in temp_users
+        await updateDoc(userDoc.ref, {
+            otp,
+            otp_expiry: otpExpiry,
+        });
 
-        // Send new OTP email
-        await sendOTP(email, otp);
+        // Send the new OTP
+        await sendVerificationEmail(email, otp, userData.fullname);
 
+        return NextResponse.json({
+            status: true,
+            message: "OTP resent successfully",
+        });
+    } catch (error) {
+        console.error("Error resending OTP:", error);
         return NextResponse.json(
-            { message: "OTP telah dikirim ulang" },
-            { status: 200 }
-        );
-    } catch (error: any) {
-        return NextResponse.json(
-            { message: error.message || "Terjadi kesalahan saat mengirim ulang OTP" },
+            { status: false, message: "Failed to resend OTP" },
             { status: 500 }
         );
     }
