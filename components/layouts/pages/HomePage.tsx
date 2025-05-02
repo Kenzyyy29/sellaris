@@ -396,9 +396,10 @@ const HomePageLayout = () => {
          </div>
         </div>
         <p className="text-lg leading-relaxed mb-6 italic">
-         "Sellaris telah mengubah cara kami mengelola 5 cabang restoran. Dengan
-         sistem terintegrasi, kami bisa memantau semua outlet dari satu
-         dashboard. Fitur inventori otomatis menghemat 20 jam kerja per minggu!"
+         &quot;Sellaris telah mengubah cara kami mengelola 5 cabang restoran.
+         Dengan sistem terintegrasi, kami bisa memantau semua outlet dari satu
+         dashboard. Fitur inventori otomatis menghemat 20 jam kerja per
+         minggu!&quot;
         </p>
         <MotionDiv
          whileHover={{scale: 1.05}}

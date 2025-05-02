@@ -6,12 +6,10 @@ import {useState, useEffect} from "react";
 import {
  FiMenu,
  FiX,
- FiChevronDown,
  FiBriefcase,
  FiMail,
  FiBook,
  FiDollarSign,
- FiLayers,
 } from "react-icons/fi";
 import {FaHandshake, FaRocket} from "react-icons/fa";
 import {BsFillLightningFill} from "react-icons/bs";
@@ -28,18 +26,6 @@ const itemVariants = {
    damping: 10,
   },
  },
-};
-
-const menuVariants = {
- open: {
-  opacity: 1,
-  y: 0,
-  transition: {
-   staggerChildren: 0.1,
-   delayChildren: 0.2,
-  },
- },
- closed: {opacity: 0, y: -20},
 };
 
 export default function Navbar() {
