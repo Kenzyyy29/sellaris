@@ -58,78 +58,72 @@ const buttonHoverVariants = {
 };
 
 export default function RegisterForm() {
- const [error, setError] = useState("");
- const [isLoading, setIsLoading] = useState(false);
- const [email, setEmail] = useState("");
- const [showOtp, setShowOtp] = useState(false);
- const [userId, setUserId] = useState("");
- const [formData, setFormData] = useState({
-  fullname: "",
-  email: "",
-  phone: "",
-  password: "",
- });
- const [acceptedTerms, setAcceptedTerms] = useState(false);
- const {push} = useRouter();
+const [error, setError] = useState("");
+const [isLoading, setIsLoading] = useState(false);
+const [email, setEmail] = useState("");
+const [showOtp, setShowOtp] = useState(false);
+const [acceptedTerms, setAcceptedTerms] = useState(false);
+const {push} = useRouter();
 
- const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setError("");
-  setIsLoading(true);
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+ e.preventDefault();
+ setError("");
+ setIsLoading(true);
 
-  const formData = new FormData(e.currentTarget);
-  const data = {
-   fullname: formData.get("fullname") as string,
-   email: formData.get("email") as string,
-   phone: formData.get("phone") as string,
-   password: formData.get("password") as string,
-  };
-
-  if (!data.email || !data.password) {
-   setError("Email and password are required");
-   setIsLoading(false);
-   return;
-  }
-
-  try {
-   const res = await fetch("/api/auth/register", {
-    method: "POST",
-    headers: {
-     "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-   });
-
-   const result = await res.json();
-
-   if (!res.ok) {
-    throw new Error(result.message || "Registration failed");
-   }
-
-   setEmail(data.email);
-   setUserId(result.userId);
-   setFormData(data);
-   setShowOtp(true);
-  } catch (error: any) {
-   setError(error.message);
-  } finally {
-   setIsLoading(false);
-  }
+ const formData = new FormData(e.currentTarget);
+ const data = {
+  fullname: formData.get("fullname") as string,
+  email: formData.get("email") as string,
+  phone: formData.get("phone") as string,
+  password: formData.get("password") as string,
  };
 
- const handleOTPVerificationSuccess = () => {
-  setShowOtp(false);
-  push("/dashboard");
- };
-
- if (showOtp) {
-  return (
-   <OtpVerification
-    email={email}
-    onVerificationSuccess={handleOTPVerificationSuccess}
-   />
-  );
+ if (!data.email || !data.password) {
+  setError("Email and password are required");
+  setIsLoading(false);
+  return;
  }
+
+ try {
+  const res = await fetch("/api/auth/register", {
+   method: "POST",
+   headers: {
+    "Content-Type": "application/json",
+   },
+   body: JSON.stringify(data),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+   throw new Error(result.message || "Registration failed");
+  }
+
+  setEmail(data.email);
+  setShowOtp(true);
+ } catch (error: unknown) {
+  setError(
+   error instanceof Error ? error.message : "An unknown error occurred"
+  );
+ } finally {
+  setIsLoading(false);
+ }
+};
+
+const handleOTPVerificationSuccess = () => {
+ setShowOtp(false);
+ push("/dashboard");
+};
+
+if (showOtp) {
+ return (
+  <OtpVerification
+   email={email}
+   onVerificationSuccess={handleOTPVerificationSuccess}
+  />
+ );
+}
+
 
  return (
   <motion.div
