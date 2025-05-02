@@ -122,10 +122,10 @@ export default function Navbar() {
      },
     },
    }}
-   className={`fixed w-full z-50 transition-all duration-500 ease-in-out ${
+   className={`fixed w-full z-50 py-3 ${
     scrolled
-     ? "bg-gradient-to-r from-blue-700 to-blue-800 shadow-xl py-3"
-     : "bg-gradient-to-r from-blue-600/90 to-blue-700/90 backdrop-blur-sm py-5"
+     ? "bg-gradient-to-br from-blue-600 to-blue-800 "
+     : "bg-gradient-to-br from-blue-600 to-blue-800 backdrop-blur-sm"
    }`}>
    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="flex items-center justify-between h-16">
@@ -177,7 +177,6 @@ export default function Navbar() {
             : "text-blue-100 hover:bg-blue-700/50 hover:text-white"
           }`}
           onMouseEnter={() => item.submenu && setActiveSubmenu(item.name)}>
-          <span className="mr-2 text-lg">{item.icon}</span>
           {item.name}
           {item.submenu && (
            <FiChevronDown
@@ -262,7 +261,6 @@ export default function Navbar() {
           <Link
            href={item.path}
            className="flex items-center flex-1">
-           <span className="mr-3">{item.icon}</span>
            {item.name}
           </Link>
           {item.submenu && (

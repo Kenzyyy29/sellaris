@@ -1,47 +1,17 @@
-import { NextResponse } from "next/server";
-import User from "@/lib/models/User";
-import connectToDB from "@/lib/utils/db";
+import {NextResponse} from "next/server";
+import {retrieveData} from "@/lib/utils/service";
 
 export async function GET(request: Request) {
-    try {
-        await connectToDB();
-        const users = await User.find({})
-            .select("-password") 
-            .lean();
-
-        return NextResponse.json(users);
-    } catch (error: any) {
-        return NextResponse.json(
-            { error: error.message || "Failed to fetch users" },
-            { status: 500 }
-        );
-    }
-}
-
-// DELETE /api/user - Delete a user (example of additional endpoint)
-export async function DELETE(request: Request) {
-    try {
-        await connectToDB();
-        const { email } = await request.json();
-
-        // In a real app, add authorization checks here
-        const result = await User.deleteOne({ email });
-
-        if (result.deletedCount === 0) {
-            return NextResponse.json(
-                { error: "User not found" },
-                { status: 404 }
-            );
-        }
-
-        return NextResponse.json(
-            { message: "User deleted successfully" },
-            { status: 200 }
-        );
-    } catch (error: any) {
-        return NextResponse.json(
-            { error: error.message || "Failed to delete user" },
-            { status: 500 }
-        );
-    }
+ try {
+  const users = await retrieveData("users");
+  return NextResponse.json(
+   {status: true, statusCode: 200, data: users},
+   {status: 200}
+  );
+ } catch (error) {
+  return NextResponse.json(
+   {status: false, statusCode: 500, message: "Internal Server Error"},
+   {status: 500}
+  );
+ }
 }

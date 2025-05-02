@@ -92,15 +92,39 @@ export default function LoginForm({
 
  return (
   <motion.div
-   className="bg-white w-full max-w-md overflow-hidden rounded-2xl shadow-xl border border-gray-100"
+   className="bg-white w-full max-w-lg overflow-hidden rounded-2xl shadow-xl border border-gray-100"
    initial="hidden"
    animate="visible"
    variants={containerVariants}>
    <motion.div
-    className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center"
+    className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center relative overflow-hidden"
     initial={{opacity: 0, y: -20}}
     animate={{opacity: 1, y: 0}}
     transition={{duration: 0.5}}>
+    <motion.div
+     className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue-500 opacity-20"
+     animate={{
+      scale: [1, 1.2, 1],
+      opacity: [0.2, 0.3, 0.2],
+     }}
+     transition={{
+      duration: 8,
+      repeat: Infinity,
+      repeatType: "reverse",
+     }}
+    />
+    <motion.div
+     className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-blue-400 opacity-20"
+     animate={{
+      scale: [1, 1.3, 1],
+      opacity: [0.2, 0.4, 0.2],
+     }}
+     transition={{
+      duration: 10,
+      repeat: Infinity,
+      repeatType: "reverse",
+     }}
+    />
     <motion.div
      className="inline-flex items-center justify-center bg-white p-4 rounded-full shadow-lg"
      whileHover={{scale: 1.05}}
@@ -225,13 +249,7 @@ export default function LoginForm({
       <Link
        href="/auth/register"
        className="font-semibold text-blue-600 hover:text-blue-500 inline-flex items-center group">
-       <span className="group-hover:underline">Daftar</span>{" "}
-       <motion.span
-        className="ml-1"
-        animate={{x: [0, 3, 0]}}
-        transition={{repeat: Infinity, duration: 2}}>
-        <FiArrowRight />
-       </motion.span>
+       <span className="group-hover:underline">Daftar</span>
       </Link>
      </p>
     </motion.div>

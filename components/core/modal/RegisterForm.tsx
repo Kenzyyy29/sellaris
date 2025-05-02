@@ -63,8 +63,8 @@ export default function RegisterForm() {
  const [isLoading, setIsLoading] = useState(false);
  const [email, setEmail] = useState("");
  const [showOtp, setShowOtp] = useState(false);
- const [userId, setUserId] = useState("");
- const [formData, setFormData] = useState({
+ const [_userId, setUserId] = useState("");
+ const [_formData, setFormData] = useState({
   fullname: "",
   email: "",
   phone: "",
@@ -134,11 +134,10 @@ export default function RegisterForm() {
 
  return (
   <motion.div
-   className="bg-white w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl border border-gray-100" // Changed from max-w-md to max-w-lg
+   className="bg-white w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl border border-gray-100"
    initial="hidden"
    animate="visible"
-   variants={containerVariants}
-   whileHover={{scale: 1.005}}>
+   variants={containerVariants}>
    <motion.div
     className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center relative overflow-hidden"
     initial={{opacity: 0, y: -20}}
@@ -284,16 +283,6 @@ export default function RegisterForm() {
        <label
         htmlFor="terms"
         className="font-medium text-gray-700 flex items-start">
-        {acceptedTerms ? (
-         <motion.span
-          className="inline-block mr-1"
-          initial={{scale: 0}}
-          animate={{scale: 1}}>
-          <FiCheck className="text-green-500 text-lg" />
-         </motion.span>
-        ) : (
-         <span className="inline-block w-5 h-5 mr-1"></span>
-        )}
         <span>
          Saya menyetujui{" "}
          <Link
@@ -362,15 +351,9 @@ export default function RegisterForm() {
      <p className="text-sm text-gray-600">
       Sudah punya akun?{" "}
       <Link
-       href="/auh/login"
+       href="/auth/login"
        className="font-semibold text-blue-600 hover:text-blue-500 inline-flex items-center group">
-       <span className="group-hover:underline">Masuk</span>{" "}
-       <motion.span
-        className="ml-1"
-        animate={{x: [0, 3, 0]}}
-        transition={{repeat: Infinity, duration: 2}}>
-        <FiArrowRight />
-       </motion.span>
+       <span className="group-hover:underline">Masuk</span>
       </Link>
      </p>
     </motion.div>

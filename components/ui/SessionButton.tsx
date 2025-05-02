@@ -137,7 +137,7 @@ export default function SessionButton({
    whileHover={{scale: 1.03}}
    whileTap={{scale: 0.97}}>
    <Link
-    href="/login"
+    href="/auth/login"
     className={`flex items-center gap-2 ${
      mobile
       ? "w-full justify-center px-5 py-3 bg-gradient-to-r from-blue-600/80 to-blue-700/80 rounded-xl"
