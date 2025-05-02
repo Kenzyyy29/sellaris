@@ -46,7 +46,6 @@ export default function Navbar() {
  const pathname = usePathname();
  const [isOpen, setIsOpen] = useState(false);
  const [scrolled, setScrolled] = useState(false);
- const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
 
  useEffect(() => {
   const handleScroll = () => {
@@ -61,54 +60,33 @@ export default function Navbar() {
    name: "Tentang Kami",
    path: "/about",
    icon: <FaHandshake className="text-lg" />,
-   submenu: null,
   },
   {
    name: "Fitur",
    path: "/features",
    icon: <BsFillLightningFill className="text-lg" />,
-   submenu: [
-    {
-     path: "/features/analytics",
-     name: "Analitik",
-     icon: <FiLayers className="text-base" />,
-    },
-    {
-     path: "/features/integrations",
-     name: "Integrasi",
-     icon: <FiLayers className="text-base" />,
-    },
-   ],
   },
   {
    name: "Harga",
    path: "/pricing",
    icon: <FiDollarSign className="text-lg" />,
-   submenu: null,
   },
   {
    name: "Blog",
    path: "/blog",
    icon: <FiBook className="text-lg" />,
-   submenu: null,
   },
   {
    name: "Karir",
    path: "/career",
    icon: <FiBriefcase className="text-lg" />,
-   submenu: null,
   },
   {
    name: "Kontak",
    path: "/contact",
    icon: <FiMail className="text-lg" />,
-   submenu: null,
   },
  ];
-
- const toggleSubmenu = (label: string) => {
-  setActiveSubmenu(activeSubmenu === label ? null : label);
- };
 
  return (
   <motion.nav
@@ -171,54 +149,14 @@ export default function Navbar() {
         <div className="flex items-center">
          <Link
           href={item.path}
-          className={`flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center px-4 py-3 rounded-lg text-md font-medium transition-all ${
            pathname === item.path
             ? "bg-blue-800/50 text-white shadow-inner"
             : "text-blue-100 hover:bg-blue-700/50 hover:text-white"
-          }`}
-          onMouseEnter={() => item.submenu && setActiveSubmenu(item.name)}>
+          }`}>
           {item.name}
-          {item.submenu && (
-           <FiChevronDown
-            className={`ml-1 transition-transform ${
-             activeSubmenu === item.name ? "rotate-180" : ""
-            }`}
-           />
-          )}
          </Link>
         </div>
-
-        {item.submenu && (
-         <AnimatePresence>
-          {activeSubmenu === item.name && (
-           <motion.div
-            initial="closed"
-            animate="open"
-            exit="closed"
-            variants={menuVariants}
-            className="absolute left-0 mt-2 w-56 origin-top-left rounded-xl bg-blue-800 shadow-lg ring-1 ring-blue-900/50"
-            onMouseLeave={() => setActiveSubmenu(null)}>
-            <div className="py-1">
-             {item.submenu.map((subItem) => (
-              <motion.div
-               key={subItem.path}
-               variants={itemVariants}>
-               <Link
-                href={subItem.path}
-                className={`block px-4 py-3 text-sm ${
-                 pathname === subItem.path
-                  ? "bg-blue-700 text-white"
-                  : "text-blue-100 hover:bg-blue-700/50 hover:text-white"
-                }`}>
-                {subItem.name}
-               </Link>
-              </motion.div>
-             ))}
-            </div>
-           </motion.div>
-          )}
-         </AnimatePresence>
-        )}
        </div>
       ))}
      </motion.div>
@@ -253,42 +191,13 @@ export default function Navbar() {
       <div className="px-4 pt-2 pb-4 space-y-1">
        {navItems.map((item) => (
         <div key={item.path}>
-         <div
-          className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-medium text-blue-100 hover:bg-blue-700/50 hover:text-white"
-          onClick={() =>
-           item.submenu ? toggleSubmenu(item.name) : setIsOpen(false)
-          }>
+         <div className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-medium text-blue-100 hover:bg-blue-700/50 hover:text-white">
           <Link
            href={item.path}
            className="flex items-center flex-1">
            {item.name}
           </Link>
-          {item.submenu && (
-           <FiChevronDown
-            className={`transition-transform ${
-             activeSubmenu === item.name ? "rotate-180" : ""
-            }`}
-           />
-          )}
          </div>
-
-         {item.submenu && activeSubmenu === item.name && (
-          <div className="pl-8 py-1 space-y-1">
-           {item.submenu.map((subItem) => (
-            <Link
-             key={subItem.path}
-             href={subItem.path}
-             onClick={() => setIsOpen(false)}
-             className={`block px-3 py-2 rounded-lg text-sm ${
-              pathname === subItem.path
-               ? "bg-blue-800 text-white"
-               : "text-blue-100 hover:bg-blue-700 hover:text-white"
-             }`}>
-             {subItem.name}
-            </Link>
-           ))}
-          </div>
-         )}
         </div>
        ))}
        <div className="pt-2">

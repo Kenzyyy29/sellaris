@@ -92,7 +92,7 @@ export default function LoginForm({
 
  return (
   <motion.div
-   className="bg-white w-full max-w-lg overflow-hidden rounded-2xl shadow-xl border border-gray-100"
+   className="bg-white w-full max-w-md overflow-hidden rounded-2xl shadow-xl border border-gray-100"
    initial="hidden"
    animate="visible"
    variants={containerVariants}>
