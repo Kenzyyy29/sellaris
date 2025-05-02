@@ -11,9 +11,8 @@ import {
  FiLock,
  FiArrowRight,
  FiLoader,
- FiCheck,
 } from "react-icons/fi";
-import {FaHandshake, FaRocket} from "react-icons/fa";
+import {FaRocket} from "react-icons/fa";
 import {BsShieldLock} from "react-icons/bs";
 
 const itemVariants = {
@@ -63,8 +62,8 @@ export default function RegisterForm() {
  const [isLoading, setIsLoading] = useState(false);
  const [email, setEmail] = useState("");
  const [showOtp, setShowOtp] = useState(false);
- const [_userId, setUserId] = useState("");
- const [_formData, setFormData] = useState({
+ const [userId, setUserId] = useState("");
+ const [formData, setFormData] = useState({
   fullname: "",
   email: "",
   phone: "",

@@ -2,7 +2,7 @@
 import {motion} from "framer-motion";
 import {signIn} from "next-auth/react";
 import {useState, useRef, useEffect} from "react";
-import {FiArrowRight, FiLoader, FiCheck, FiClock} from "react-icons/fi";
+import {FiArrowRight, FiLoader, FiClock} from "react-icons/fi";
 import {FaShieldAlt} from "react-icons/fa";
 import {BsShieldLock} from "react-icons/bs";
 

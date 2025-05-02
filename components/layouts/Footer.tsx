@@ -2,7 +2,7 @@
 import {motion} from "framer-motion";
 import Link from "next/link";
 import {FiMail, FiGithub, FiTwitter} from "react-icons/fi";
-import {FaRocket, FaHandshake} from "react-icons/fa";
+import {FaRocket} from "react-icons/fa";
 
 const itemVariants = {
  hidden: {opacity: 0, y: 20},
