@@ -21,12 +21,14 @@ const disableNavbar = [
  "/auth/register",
  "/admin/webmaster",
  "/admin/dashboard",
+ "/unauthorized"
 ];
 const disableFooter = [
  "/auth/login",
  "/auth/register",
  "/admin/webmaster",
  "/admin/dashboard",
+ "/unauthorized",
 ];
 
 export default function RootLayout({

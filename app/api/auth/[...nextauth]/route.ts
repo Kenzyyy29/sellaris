@@ -7,7 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 const authOptions: NextAuthOptions = {
  session: {
   strategy: "jwt",
-  maxAge: 24 * 60 * 60, // 1 hari
+  maxAge: 60 * 60, // 1 jam
  },
  secret: process.env.NEXTAUTH_SECRET!,
  providers: [
@@ -72,8 +72,8 @@ const authOptions: NextAuthOptions = {
   },
  },
  pages: {
-  signIn: "/login",
-  error: "/login",
+  signIn: "/auth/login",
+  error: "/auth/login",
  },
 };
 

@@ -18,24 +18,32 @@ export default function withAuth(
         });
 
         // Handle auth pages (login/register) for authenticated users
-        const isAuthPage = ["/login", "/register"].includes(pathname);
+        const isAuthPage = ["/auth/login", "/auth/register"].includes(pathname);
         if (isAuthPage && token) {
             const redirectPath =
                 token.role === "admin" ? "/admin/webmaster" : "/admin/dashboard";
             return NextResponse.redirect(new URL(redirectPath, req.url));
         }
 
-        // Handle dashboard redirect based on role
         if (pathname === "/dashboard") {
             if (!token) {
-                return NextResponse.redirect(new URL("/login", req.url));
+                return NextResponse.redirect(new URL("/auth/login", req.url));
             }
             const redirectPath =
                 token.role === "admin" ? "/admin/webmaster" : "/admin/dashboard";
             return NextResponse.redirect(new URL(redirectPath, req.url));
         }
 
-        // Handle admin routes
+        // Handle dashboard redirect based on role
+        if (pathname === "/admin") {
+            if (!token) {
+                return NextResponse.redirect(new URL("/auth/login", req.url));
+            }
+            const redirectPath =
+                token.role === "admin" ? "/admin/webmaster" : "/admin/dashboard";
+            return NextResponse.redirect(new URL(redirectPath, req.url));
+        }
+
         if (pathname.startsWith("/admin/webmaster")) {
             if (!token || token.role !== "admin") {
                 return NextResponse.redirect(new URL("/unauthorized", req.url));
@@ -44,19 +52,12 @@ export default function withAuth(
 
         if (pathname.startsWith("/admin/dashboard")) {
             if (!token) {
-                return NextResponse.redirect(new URL("/login", req.url));
+                return NextResponse.redirect(new URL("/auth/login", req.url));
             }
             if (token.role === "admin") {
                 return NextResponse.redirect(new URL("/admin/webmaster", req.url));
             }
             if (token.role !== "member") {
-                return NextResponse.redirect(new URL("/unauthorized", req.url));
-            }
-        }
-
-        // Handle member routes
-        if (pathname.startsWith("/member")) {
-            if (!token || token.role !== "member") {
                 return NextResponse.redirect(new URL("/unauthorized", req.url));
             }
         }
@@ -69,7 +70,7 @@ export default function withAuth(
 
         if (isProtectedRoute) {
             if (!token) {
-                const url = new URL("/login", req.url);
+                const url = new URL("/auth/login", req.url);
                 url.searchParams.set("callbackUrl", encodeURI(pathname));
                 return NextResponse.redirect(url);
             }

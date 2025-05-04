@@ -10,10 +10,10 @@ import {
  FiMail,
  FiBook,
  FiDollarSign,
+ FiLogIn,
 } from "react-icons/fi";
 import {FaHandshake, FaRocket} from "react-icons/fa";
 import {BsFillLightningFill} from "react-icons/bs";
-import SessionButton from "@/components/ui/SessionButton";
 
 const itemVariants = {
  hidden: {opacity: 0, y: -20},
@@ -96,8 +96,7 @@ export default function Navbar() {
      {/* Logo/Brand */}
      <motion.div
       variants={itemVariants}
-      className="flex-shrink-0 flex items-center"
-      whileHover={{scale: 1.05}}>
+      className="flex-shrink-0 flex items-center">
       <Link
        href="/"
        className="flex items-center group">
@@ -151,7 +150,14 @@ export default function Navbar() {
      <motion.div
       variants={itemVariants}
       className="hidden md:flex items-center ml-4">
-      <SessionButton />
+      <a
+       href="/auth/login"
+       target="_blank"
+       rel="noopener noreferrer"
+       className="flex items-center gap-2 w-full justify-center px-4 py-2 rounded-xl hover:bg-blue-600/20 text-white font-medium transition-all">
+       <FiLogIn className="text-lg" />
+       <span>Sign In</span>
+      </a>
      </motion.div>
 
      {/* Mobile Menu Button */}
@@ -187,10 +193,14 @@ export default function Navbar() {
         </div>
        ))}
        <div className="pt-2">
-        <SessionButton
-         mobile
-         onClose={() => setIsOpen(false)}
-        />
+        <a
+         href="/auth/login"
+         target="_blank"
+         rel="noopener noreferrer"
+         className="flex items-center gap-2 w-full justify-center px-4 py-2 rounded-xl hover:bg-blue-600/20 text-white font-medium transition-all">
+         <FiLogIn className="text-lg" />
+         <span>Sign In</span>
+        </a>
        </div>
       </div>
      </motion.div>
