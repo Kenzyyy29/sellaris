@@ -86,3 +86,107 @@ export const sendVerificationEmail = async (
     throw new Error("Failed to send verification email");
   }
 };
+
+export const sendContactConfirmationEmail = async (
+ email: string,
+ name: string,
+ subject: string,
+ message: string
+) => {
+ try {
+  const transporter = nodemailer.createTransport({
+   service: process.env.EMAIL_SERVICE || "gmail",
+   host: process.env.EMAIL_HOST,
+   port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
+   secure: process.env.EMAIL_SECURE === "true",
+   auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+   },
+  });
+
+  const mailOptions = {
+   from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+   to: email,
+   subject: `Terima kasih atas pesan Anda - ${subject}`,
+   html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Terima kasih telah menghubungi kami</h2>
+          <p>Halo ${name},</p>
+          
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <p>Kami telah menerima pesan Anda dengan detail berikut:</p>
+            <p><strong>Subjek:</strong> ${subject}</p>
+            <p><strong>Pesan:</strong></p>
+            <blockquote style="border-left: 3px solid #ddd; padding-left: 15px; margin-left: 0; color: #555;">
+              ${message}
+            </blockquote>
+          </div>
+          
+          <p>Tim kami akan meninjau pesan Anda dan menghubungi Anda secepatnya.</p>
+          
+          <p style="margin-top: 30px;">Salam hormat,</p>
+          <p><strong>Tim Sellaris</strong></p>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8em; color: #64748b;">
+            <p>Email ini dikirim secara otomatis. Mohon tidak membalas email ini.</p>
+            <p>© ${new Date().getFullYear()} Sellaris. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+  };
+
+  await transporter.sendMail(mailOptions);
+  return true;
+ } catch (error) {
+  console.error("Error sending contact confirmation email:", error);
+  throw new Error("Failed to send contact confirmation email");
+ }
+};
+
+export const sendContactNotificationEmail = async (
+ name: string,
+ email: string,
+ subject: string,
+ message: string
+) => {
+ try {
+  const transporter = nodemailer.createTransport({
+   service: process.env.EMAIL_SERVICE || "gmail",
+   host: process.env.EMAIL_HOST,
+   port: process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 587,
+   secure: process.env.EMAIL_SECURE === "true",
+   auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+   },
+  });
+
+  const mailOptions = {
+   from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+   to: process.env.EMAIL_RECEIVER,
+   subject: `[Kontak Website] ${subject}`,
+   html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Pesan Baru dari Form Kontak Website</h2>
+          <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #2563eb;">
+            <p><strong>Nama:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Subjek:</strong> ${subject}</p>
+            <p><strong>Pesan:</strong></p>
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+          <p style="margin-top: 20px; font-size: 0.9em; color: #64748b;">
+            Pesan ini dikirim melalui form kontak website pada ${new Date().toLocaleString()}.
+          </p>
+        </div>
+      `,
+  };
+
+  await transporter.sendMail(mailOptions);
+  return true;
+ } catch (error) {
+  console.error("Error sending contact notification email:", error);
+  throw new Error("Failed to send contact notification email");
+ }
+};
