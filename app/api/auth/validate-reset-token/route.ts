@@ -1,56 +1,80 @@
-import { NextResponse } from "next/server";
-import { collection, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
-import { firestore } from "@/lib/firebase/init";
-import bcrypt from "bcryptjs";
+import {collection, getDocs, query, where} from "firebase/firestore";
+import {firestore} from "@/lib/firebase/init";
 
-export async function POST(request: Request) {
-    try {
-        const { token, password } = await request.json();
+export async function GET(request: Request) {
+ const {searchParams} = new URL(request.url);
+ const token = searchParams.get("token");
 
-        if (!token || !password) {
-            return NextResponse.json(
-                { status: false, message: "Token and password are required" },
-                { status: 400 }
-            );
-        }
+ console.log("Token received:", token); // Debug
 
-        // Validasi token
-        const usersRef = collection(firestore, "users");
-        const q = query(
-            usersRef,
-            where("resetToken", "==", token),
-            where("resetTokenExpiry", ">", new Date())
-        );
+ if (!token) {
+  return new Response(
+   JSON.stringify({
+    status: false,
+    message: "Token is required",
+   }),
+   {
+    status: 400,
+    headers: {
+     "Content-Type": "application/json",
+    },
+   }
+  );
+ }
 
-        const snapshot = await getDocs(q);
+ try {
+  const usersRef = collection(firestore, "users");
+  const q = query(usersRef, where("resetToken", "==", token));
 
-        if (snapshot.empty) {
-            return NextResponse.json(
-                { status: false, message: "Invalid or expired token" },
-                { status: 400 }
-            );
-        }
+  const snapshot = await getDocs(q);
+  console.log("Snapshot size:", snapshot.size); // Debug
 
-        const userDoc = snapshot.docs[0];
-        const hashedPassword = await bcrypt.hash(password, 10);
+  if (snapshot.empty) {
+   return new Response(
+    JSON.stringify({
+     status: false,
+     valid: false,
+     message: "Token not found",
+    }),
+    {status: 404}
+   );
+  }
 
-        // Update password dan hapus token reset
-        await updateDoc(doc(firestore, "users", userDoc.id), {
-            password: hashedPassword,
-            resetToken: null,
-            resetTokenExpiry: null,
-            updatedAt: new Date(),
-        });
+  const userData = snapshot.docs[0].data();
+  const now = new Date();
+  const expiryDate = userData.resetTokenExpiry.toDate();
 
-        return NextResponse.json({
-            status: true,
-            message: "Password has been reset successfully",
-        });
-    } catch (error) {
-        console.error("Reset password error:", error);
-        return NextResponse.json(
-            { status: false, message: "Internal server error" },
-            { status: 500 }
-        );
-    }
+  console.log("Current time:", now);
+  console.log("Expiry time:", expiryDate);
+
+  if (now > expiryDate) {
+   return new Response(
+    JSON.stringify({
+     status: false,
+     valid: false,
+     message: "Token expired",
+    }),
+    {status: 400}
+   );
+  }
+
+  return new Response(
+   JSON.stringify({
+    status: true,
+    valid: true,
+    userId: snapshot.docs[0].id,
+   }),
+   {status: 200}
+  );
+ } catch (error) {
+  console.error("Validation error:", error);
+  return new Response(
+   JSON.stringify({
+    status: false,
+    valid: false,
+    message: "Internal server error",
+   }),
+   {status: 500}
+  );
+ }
 }

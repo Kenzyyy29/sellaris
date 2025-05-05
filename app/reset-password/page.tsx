@@ -25,68 +25,115 @@ export default function ResetPasswordPage() {
   }
  }, [token]);
 
+ useEffect(() => {
+  const validate = async () => {
+   try {
+    if (!token) {
+     throw new Error("No token provided");
+    }
+
+    const response = await fetch(
+     `/api/auth/validate-reset-token?token=${token}`
+    );
+    const data = await response.json();
+
+    console.log("Validation response:", data); // Debug
+
+    if (!data.valid) {
+     throw new Error(data.message || "Invalid token");
+    }
+
+    setTokenValid(true);
+   } catch (err) {
+    console.error("Validation failed:", err);
+    setTokenValid(false);
+    router.push(
+     "/forgot-password?error=invalid_token&details=" +
+      encodeURIComponent(err instanceof Error ? err.message : "Unknown error")
+    );
+   }
+  };
+
+  validate();
+ }, [token, router]);
+
  const validateToken = async () => {
   try {
    const response = await fetch(
     `/api/auth/validate-reset-token?token=${token}`
    );
-   const data = await response.json();
 
    if (!response.ok) {
+    throw new Error("Failed to validate token");
+   }
+
+   const data = await response.json();
+
+   if (!data.valid) {
     throw new Error(data.message || "Invalid or expired token");
    }
 
    setTokenValid(true);
   } catch (err) {
-   setError(err.message);
    setTokenValid(false);
-  }
- };
-
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
-
-  if (password !== confirmPassword) {
-   setError("Passwords do not match");
-   return;
-  }
-
-  if (password.length < 6) {
-   setError("Password must be at least 6 characters");
-   return;
-  }
-
-  setIsLoading(true);
-
-  try {
-   const response = await fetch("/api/auth/reset-password", {
-    method: "POST",
-    headers: {
-     "Content-Type": "application/json",
-    },
-    body: JSON.stringify({token, password}),
-   });
-
-   const data = await response.json();
-
-   if (!response.ok) {
-    throw new Error(data.message || "Failed to reset password");
+   if (err instanceof Error) {
+    setError(err.message);
+   } else {
+    setError("Invalid or expired token");
    }
-
-   setSuccess(
-    "Password has been reset successfully. You can now login with your new password."
-   );
-   setTimeout(() => {
-    router.push("/auth/login");
-   }, 3000);
-  } catch (err) {
-   setError(err.message || "Something went wrong");
-  } finally {
-   setIsLoading(false);
+   router.push(`/forgot-password?error=invalid_token`);
   }
  };
+
+const handleSubmit = async (e: React.FormEvent) => {
+ e.preventDefault();
+ setError("");
+ setSuccess("");
+
+ if (password !== confirmPassword) {
+  setError("Passwords do not match");
+  return;
+ }
+
+ setIsLoading(true);
+
+ try {
+  const response = await fetch("/api/auth/reset-password", {
+   method: "POST",
+   headers: {
+    "Content-Type": "application/json",
+   },
+   body: JSON.stringify({token, password}),
+  });
+
+  // Handle non-JSON responses
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+   const text = await response.text();
+   throw new Error(text || "Invalid server response");
+  }
+
+  const data = await response.json();
+
+  if (!response.ok) {
+   throw new Error(data.message || "Failed to reset password");
+  }
+
+  setSuccess("Password reset successful! Redirecting to login...");
+  setTimeout(() => {
+   router.push("/auth/login");
+  }, 2000);
+ } catch (err) {
+  console.error("Reset error:", err);
+  if (err instanceof Error) {
+   setError(err.message);
+  } else {
+   setError("An unexpected error occurred");
+  }
+ } finally {
+  setIsLoading(false);
+ }
+};
 
  if (tokenValid === null) {
   return (

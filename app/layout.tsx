@@ -21,7 +21,9 @@ const disableNavbar = [
  "/auth/register",
  "/admin/webmaster",
  "/admin/dashboard",
- "/unauthorized"
+ "/unauthorized",
+ "/forgot-password",
+ "/reset-password",
 ];
 const disableFooter = [
  "/auth/login",
@@ -29,6 +31,8 @@ const disableFooter = [
  "/admin/webmaster",
  "/admin/dashboard",
  "/unauthorized",
+ "/forgot-password",
+ "/reset-password",
 ];
 
 export default function RootLayout({

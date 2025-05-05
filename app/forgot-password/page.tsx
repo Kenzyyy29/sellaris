@@ -3,7 +3,7 @@ import {motion} from "framer-motion";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
-import {FiMail, FiArrowRight, FiLoader} from "react-icons/fi";
+import {FiMail, FiUser, FiArrowRight, FiLoader} from "react-icons/fi";
 
 export default function ForgotPasswordPage() {
  const router = useRouter();
@@ -25,15 +25,19 @@ export default function ForgotPasswordPage() {
     body: JSON.stringify({emailOrName}),
    });
 
-   const data = await response.json();
-
    if (!response.ok) {
-    throw new Error(data.message || "Failed to send reset link");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to send reset link");
    }
 
    router.push("/forgot-password/thank-you");
   } catch (err) {
-   setError(err.message || "Something went wrong");
+   console.error("Error details:", err); // Debug
+   if (err instanceof Error) {
+    setError(err.message);
+   } else {
+    setError("An unknown error occurred");
+   }
   } finally {
    setIsLoading(false);
   }
