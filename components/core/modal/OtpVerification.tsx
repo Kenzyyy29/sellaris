@@ -164,27 +164,21 @@ export default function OtpVerification({
   <motion.div
    initial={{opacity: 0}}
    animate={{opacity: 1}}
-   className="bg-white w-full max-w-md overflow-hidden rounded-2xl shadow-xl border border-gray-100">
+   className=" w-full max-w-md overflow-hidden">
    <motion.div
-    className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center"
+    className=" p-8 text-center"
     initial={{opacity: 0, y: -20}}
     animate={{opacity: 1, y: 0}}
     transition={{duration: 0.5}}>
-    <motion.div
-     className="inline-flex items-center justify-center bg-white p-4 rounded-full shadow-lg"
-     whileHover={{scale: 1.05}}
-     whileTap={{scale: 0.95}}>
-     <FaShieldAlt className="text-blue-600 text-3xl" />
-    </motion.div>
     <motion.h1
-     className="text-2xl font-bold text-white mt-6"
+     className="text-2xl font-bold text-blue-700 mt-6"
      initial={{opacity: 0}}
      animate={{opacity: 1}}
      transition={{delay: 0.2}}>
      Verifikasi Keamanan
     </motion.h1>
     <motion.p
-     className="text-blue-100 mt-2"
+     className="text-blue-400 mt-2"
      initial={{opacity: 0}}
      animate={{opacity: 1}}
      transition={{delay: 0.3}}>

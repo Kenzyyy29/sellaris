@@ -17,10 +17,25 @@ const firestore = getFirestore(app);
 
 export async function retrieveData(collectionName: string) {
     const snapshot = await getDocs(collection(firestore, collectionName));
-    return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-    }));
+    return snapshot.docs.map((doc) => {
+     const data = doc.data();
+     const result: any = {
+      id: doc.id,
+      ...data,
+     };
+
+     if (data.createdAt) {
+      result.createdAt = data.createdAt.toDate();
+     }
+     if (data.updatedAt) {
+      result.updatedAt = data.updatedAt.toDate();
+     }
+     if (data.otpExpiry) {
+      result.otpExpiry = data.otpExpiry.toDate();
+     }
+
+     return result;
+    });
 }
 
 export async function retrieveDataById(collectionName: string, id: string) {
