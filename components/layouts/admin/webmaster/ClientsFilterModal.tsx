@@ -2,16 +2,18 @@
 
 import {FaFilter, FaTimes, FaCalendarAlt} from "react-icons/fa";
 import {motion} from "framer-motion";
-import { useState } from "react";
+import {useState} from "react";
+
+interface FilterType {
+ sort: "newest" | "oldest" | "";
+ verified: boolean | null;
+}
 
 interface FilterModalProps {
  isOpen: boolean;
  onClose: () => void;
- onApply: (filters: any) => void;
- filters: {
-  sort: "newest" | "oldest" | "";
-  verified: boolean | null;
- };
+ onApply: (filters: FilterType) => void; 
+ filters: FilterType; 
 }
 
 export default function ClientsFilterModal({
@@ -20,7 +22,7 @@ export default function ClientsFilterModal({
  onApply,
  filters,
 }: FilterModalProps) {
- const [localFilters, setLocalFilters] = useState(filters);
+ const [localFilters, setLocalFilters] = useState<FilterType>(filters);
 
  if (!isOpen) return null;
 
