@@ -15,11 +15,19 @@ import { sendVerificationEmail } from "@/lib/actions/email";
 
 const firestore = getFirestore(app);
 
+interface DocumentData {
+ id: string;
+ [key: string]: any;
+ createdAt?: Date;
+ updatedAt?: Date;
+ otpExpiry?: Date;
+}
+
 export async function retrieveData(collectionName: string) {
     const snapshot = await getDocs(collection(firestore, collectionName));
     return snapshot.docs.map((doc) => {
      const data = doc.data();
-     const result: any = {
+     const result: DocumentData = {
       id: doc.id,
       ...data,
      };

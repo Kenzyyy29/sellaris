@@ -1,7 +1,7 @@
 "use client";
 import {motion} from "framer-motion";
 import {useRouter, useSearchParams} from "next/navigation";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {FiLock, FiXCircle, FiLoader} from "react-icons/fi";
 
 export default function ResetPasswordLayout() {
@@ -16,58 +16,20 @@ export default function ResetPasswordLayout() {
  const [success, setSuccess] = useState("");
  const [tokenValid, setTokenValid] = useState<boolean | null>(null);
 
- // Validasi token saat komponen mount
- useEffect(() => {
-  if (token) {
-   validateToken();
-  } else {
-   setTokenValid(false);
-  }
- }, [token]);
-
- useEffect(() => {
-  const validate = async () => {
-   try {
-    if (!token) {
-     throw new Error("No token provided");
-    }
-
-    const response = await fetch(
-     `/api/auth/validate-reset-token?token=${token}`
-    );
-    const data = await response.json();
-
-    console.log("Validation response:", data); // Debug
-
-    if (!data.valid) {
-     throw new Error(data.message || "Invalid token");
-    }
-
-    setTokenValid(true);
-   } catch (err) {
-    console.error("Validation failed:", err);
-    setTokenValid(false);
-    router.push(
-     "/forgot-password?error=invalid_token&details=" +
-      encodeURIComponent(err instanceof Error ? err.message : "Unknown error")
-    );
-   }
-  };
-
-  validate();
- }, [token, router]);
-
- const validateToken = async () => {
+ const validateToken = useCallback(async () => {
   try {
+   if (!token) {
+    throw new Error("No token provided");
+   }
+
    const response = await fetch(
     `/api/auth/validate-reset-token?token=${token}`
    );
+   const data = await response.json();
 
    if (!response.ok) {
-    throw new Error("Failed to validate token");
+    throw new Error(data.message || "Failed to validate token");
    }
-
-   const data = await response.json();
 
    if (!data.valid) {
     throw new Error(data.message || "Invalid or expired token");
@@ -83,7 +45,16 @@ export default function ResetPasswordLayout() {
    }
    router.push(`/forgot-password?error=invalid_token`);
   }
- };
+ }, [token, router]);
+
+ // Validasi token saat komponen mount atau token berubah
+ useEffect(() => {
+  if (token) {
+   validateToken();
+  } else {
+   setTokenValid(false);
+  }
+ }, [token, validateToken]);
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -106,7 +77,6 @@ export default function ResetPasswordLayout() {
     body: JSON.stringify({token, password}),
    });
 
-   // Handle non-JSON responses
    const contentType = response.headers.get("content-type");
    if (!contentType || !contentType.includes("application/json")) {
     const text = await response.text();
