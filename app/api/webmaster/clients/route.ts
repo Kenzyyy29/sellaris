@@ -1,41 +1,15 @@
 // /app/api/webmaster/clients/route.ts
-import {retrieveData} from "@/lib/utils/service";
+import { retrieveUsers} from "@/lib/utils/service";
 import {NextResponse} from "next/server";
 import {deleteDoc, doc, getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
 
 const firestore = getFirestore(app);
 
-interface User {
- id: string;
- fullname: string;
- email: string;
- phone?: string;
- password?: string;
- role: string;
- verified: boolean;
- otp?: string;
- otpExpiry?: Date;
- createdAt: Date | string;
- updatedAt: Date | string;
-}
-
-// Fungsi untuk memastikan data sesuai dengan interface User
-function isUser(data: any): data is User {
- return (
-  typeof data.id === "string" &&
-  typeof data.fullname === "string" &&
-  typeof data.email === "string" &&
-  typeof data.role === "string" &&
-  typeof data.verified === "boolean"
- );
-}
-
 export async function GET() {
  try {
-  const users = await retrieveData("users");
-  const validUsers = users.filter(isUser);
-  const members = validUsers.filter((user) => user.role === "member");
+ const users = await retrieveUsers();
+ const members = users.filter((user) => user.role === "member");
 
   return NextResponse.json({
    status: true,

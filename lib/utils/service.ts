@@ -34,6 +34,26 @@ interface UserDocument extends BaseDocument {
  otpExpiry?: Date;
 }
 
+export async function retrieveUsers(): Promise<UserDocument[]> {
+ const snapshot = await getDocs(collection(firestore, "users"));
+ return snapshot.docs.map((doc) => {
+  const data = doc.data();
+  return {
+   id: doc.id,
+   fullname: data.fullname,
+   email: data.email,
+   phone: data.phone,
+   password: data.password,
+   role: data.role,
+   verified: data.verified,
+   otp: data.otp,
+   otpExpiry: data.otpExpiry?.toDate(),
+   createdAt: data.createdAt?.toDate(),
+   updatedAt: data.updatedAt?.toDate(),
+  } as UserDocument;
+ });
+}
+
 export async function retrieveData(
  collectionName: string
 ): Promise<BaseDocument[]> {
