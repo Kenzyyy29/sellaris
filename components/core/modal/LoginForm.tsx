@@ -4,7 +4,7 @@ import {signIn} from "next-auth/react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useState} from "react";
-import {FiMail, FiLock, FiArrowRight, FiLoader, FiLogIn} from "react-icons/fi";
+import {FiMail, FiLock, FiArrowRight, FiLoader} from "react-icons/fi";
 import {BsShieldLock} from "react-icons/bs";
 
 const containerVariants = {
@@ -91,62 +91,7 @@ export default function LoginForm({
  };
 
  return (
-  <motion.div
-   className="bg-white w-full max-w-md overflow-hidden rounded-2xl shadow-xl border border-gray-100"
-   initial="hidden"
-   animate="visible"
-   variants={containerVariants}>
-   <motion.div
-    className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center relative overflow-hidden"
-    initial={{opacity: 0, y: -20}}
-    animate={{opacity: 1, y: 0}}
-    transition={{duration: 0.5}}>
-    <motion.div
-     className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue-500 opacity-20"
-     animate={{
-      scale: [1, 1.2, 1],
-      opacity: [0.2, 0.3, 0.2],
-     }}
-     transition={{
-      duration: 8,
-      repeat: Infinity,
-      repeatType: "reverse",
-     }}
-    />
-    <motion.div
-     className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-blue-400 opacity-20"
-     animate={{
-      scale: [1, 1.3, 1],
-      opacity: [0.2, 0.4, 0.2],
-     }}
-     transition={{
-      duration: 10,
-      repeat: Infinity,
-      repeatType: "reverse",
-     }}
-    />
-    <motion.div
-     className="inline-flex items-center justify-center bg-white p-4 rounded-full shadow-lg"
-     whileHover={{scale: 1.05}}
-     whileTap={{scale: 0.95}}>
-     <FiLogIn className="text-blue-600 text-3xl" />
-    </motion.div>
-    <motion.h1
-     className="text-2xl font-bold text-white mt-6"
-     initial={{opacity: 0}}
-     animate={{opacity: 1}}
-     transition={{delay: 0.2}}>
-     Selamat Datang Kembali
-    </motion.h1>
-    <motion.p
-     className="text-blue-100 mt-2"
-     initial={{opacity: 0}}
-     animate={{opacity: 1}}
-     transition={{delay: 0.3}}>
-     Masuk untuk melanjutkan ke dashboard Anda
-    </motion.p>
-   </motion.div>
-
+  <div className="max-w-md w-full overflow-hidden pt-20">
    <div className="p-8">
     {error && (
      <motion.div
@@ -254,6 +199,6 @@ export default function LoginForm({
      </p>
     </motion.div>
    </div>
-  </motion.div>
+  </div>
  );
 }

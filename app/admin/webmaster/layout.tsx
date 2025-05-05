@@ -1,9 +1,9 @@
 "use client";
 
-import Sidebar from "@/components/layouts/admin/Sidebar";
+import WebMasterSidebar from "@/components/layouts/admin/webmaster/WebMasterSidebar";
 import {useEffect, useState} from "react";
 
-export default function AdminDashboardLayout({
+export default function WebMasterLayout({
  children,
 }: {
  children: React.ReactNode;
@@ -15,7 +15,6 @@ export default function AdminDashboardLayout({
   const handleResize = () => {
    const mobile = window.innerWidth < 1024;
    setIsMobile(mobile);
-   // On desktop, always keep sidebar open
    if (!mobile) {
     setSidebarOpen(true);
    } else {
@@ -23,7 +22,6 @@ export default function AdminDashboardLayout({
    }
   };
 
-  // Set initial state
   handleResize();
   window.addEventListener("resize", handleResize);
   return () => window.removeEventListener("resize", handleResize);
@@ -69,7 +67,7 @@ export default function AdminDashboardLayout({
     </button>
    )}
 
-   <Sidebar
+   <WebMasterSidebar
     isMobile={isMobile}
     sidebarOpen={sidebarOpen}
     setSidebarOpen={setSidebarOpen}

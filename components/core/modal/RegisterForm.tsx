@@ -12,7 +12,6 @@ import {
  FiArrowRight,
  FiLoader,
 } from "react-icons/fi";
-import {FaRocket} from "react-icons/fa";
 import {BsShieldLock} from "react-icons/bs";
 
 const itemVariants = {
@@ -58,132 +57,74 @@ const buttonHoverVariants = {
 };
 
 export default function RegisterForm() {
-const [error, setError] = useState("");
-const [isLoading, setIsLoading] = useState(false);
-const [email, setEmail] = useState("");
-const [showOtp, setShowOtp] = useState(false);
-const [acceptedTerms, setAcceptedTerms] = useState(false);
-const {push} = useRouter();
+ const [error, setError] = useState("");
+ const [isLoading, setIsLoading] = useState(false);
+ const [email, setEmail] = useState("");
+ const [showOtp, setShowOtp] = useState(false);
+ const [acceptedTerms, setAcceptedTerms] = useState(false);
+ const {push} = useRouter();
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
- e.preventDefault();
- setError("");
- setIsLoading(true);
+ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError("");
+  setIsLoading(true);
 
- const formData = new FormData(e.currentTarget);
- const data = {
-  fullname: formData.get("fullname") as string,
-  email: formData.get("email") as string,
-  phone: formData.get("phone") as string,
-  password: formData.get("password") as string,
- };
+  const formData = new FormData(e.currentTarget);
+  const data = {
+   fullname: formData.get("fullname") as string,
+   email: formData.get("email") as string,
+   phone: formData.get("phone") as string,
+   password: formData.get("password") as string,
+  };
 
- if (!data.email || !data.password) {
-  setError("Email and password are required");
-  setIsLoading(false);
-  return;
- }
-
- try {
-  const res = await fetch("/api/auth/register", {
-   method: "POST",
-   headers: {
-    "Content-Type": "application/json",
-   },
-   body: JSON.stringify(data),
-  });
-
-  const result = await res.json();
-
-  if (!res.ok) {
-   throw new Error(result.message || "Registration failed");
+  if (!data.email || !data.password) {
+   setError("Email and password are required");
+   setIsLoading(false);
+   return;
   }
 
-  setEmail(data.email);
-  setShowOtp(true);
- } catch (error: unknown) {
-  setError(
-   error instanceof Error ? error.message : "An unknown error occurred"
+  try {
+   const res = await fetch("/api/auth/register", {
+    method: "POST",
+    headers: {
+     "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+   });
+
+   const result = await res.json();
+
+   if (!res.ok) {
+    throw new Error(result.message || "Registration failed");
+   }
+
+   setEmail(data.email);
+   setShowOtp(true);
+  } catch (error: unknown) {
+   setError(
+    error instanceof Error ? error.message : "An unknown error occurred"
+   );
+  } finally {
+   setIsLoading(false);
+  }
+ };
+
+ const handleOTPVerificationSuccess = () => {
+  setShowOtp(false);
+  push("/dashboard");
+ };
+
+ if (showOtp) {
+  return (
+   <OtpVerification
+    email={email}
+    onVerificationSuccess={handleOTPVerificationSuccess}
+   />
   );
- } finally {
-  setIsLoading(false);
  }
-};
-
-const handleOTPVerificationSuccess = () => {
- setShowOtp(false);
- push("/dashboard");
-};
-
-if (showOtp) {
- return (
-  <OtpVerification
-   email={email}
-   onVerificationSuccess={handleOTPVerificationSuccess}
-  />
- );
-}
-
 
  return (
-  <motion.div
-   className="bg-white w-full max-w-md overflow-hidden rounded-2xl shadow-2xl border border-gray-100"
-   initial="hidden"
-   animate="visible"
-   variants={containerVariants}>
-   <motion.div
-    className="bg-gradient-to-r from-blue-600 to-blue-700 p-8 text-center relative overflow-hidden"
-    initial={{opacity: 0, y: -20}}
-    animate={{opacity: 1, y: 0}}
-    transition={{duration: 0.5}}>
-    <motion.div
-     className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-blue-500 opacity-20"
-     animate={{
-      scale: [1, 1.2, 1],
-      opacity: [0.2, 0.3, 0.2],
-     }}
-     transition={{
-      duration: 8,
-      repeat: Infinity,
-      repeatType: "reverse",
-     }}
-    />
-    <motion.div
-     className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-blue-400 opacity-20"
-     animate={{
-      scale: [1, 1.3, 1],
-      opacity: [0.2, 0.4, 0.2],
-     }}
-     transition={{
-      duration: 10,
-      repeat: Infinity,
-      repeatType: "reverse",
-     }}
-    />
-
-    <motion.div
-     className="inline-flex items-center justify-center bg-white p-4 rounded-full shadow-lg relative z-10"
-     whileHover={{scale: 1.05, rotate: -5}}
-     whileTap={{scale: 0.95}}>
-     <FaRocket className="text-blue-600 text-4xl" />
-    </motion.div>
-
-    <motion.h1
-     className="text-3xl font-bold text-white mt-6 relative z-10"
-     initial={{opacity: 0}}
-     animate={{opacity: 1}}
-     transition={{delay: 0.2}}>
-     Mulai Perjalanan Anda
-    </motion.h1>
-    <motion.p
-     className="text-blue-100 mt-3 text-lg relative z-10"
-     initial={{opacity: 0}}
-     animate={{opacity: 1}}
-     transition={{delay: 0.3}}>
-     Daftar sekarang dan dapatkan akses eksklusif
-    </motion.p>
-   </motion.div>
-
+  <div className=" w-full max-w-md overflow-hidden pt-24">
    <div className="p-8">
     <motion.form
      onSubmit={handleSubmit}
@@ -351,6 +292,6 @@ if (showOtp) {
      </p>
     </motion.div>
    </div>
-  </motion.div>
+  </div>
  );
 }
