@@ -11,7 +11,6 @@ import {
  FaChartLine,
  FaServer,
  FaCog,
- FaWallet,
 } from "react-icons/fa";
 import {RiShieldKeyholeFill} from "react-icons/ri";
 import {IoIosArrowDropright} from "react-icons/io";

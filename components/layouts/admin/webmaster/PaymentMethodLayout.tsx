@@ -23,7 +23,7 @@ const PaymentMethodsPage = () => {
  const {
   methods,
   loading,
-  error,
+  error: _error,
   addMethod,
   updateMethod,
   toggleMethodStatus,
@@ -167,9 +167,9 @@ const PaymentMethodsPage = () => {
     </motion.button>
    </div>
 
-   {error && (
+   {_error && (
     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-     {error}
+     {_error}
     </div>
    )}
 
