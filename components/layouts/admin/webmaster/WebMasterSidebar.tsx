@@ -32,8 +32,8 @@ const webmasterLinks = [
   path: "/admin/webmaster/subscriptions",
   icon: <FaMoneyBillWave />,
   subItems: [
-   {name: "Packages", path: "/admin/webmaster/subscriptions/packages"},
-   {name: "Transactions", path: "/admin/webmaster/subscriptions/transactions"},
+   {name: "Packages", path: "/admin/webmaster/subscription/packages"},
+   {name: "Transactions", path: "/admin/webmaster/subscription/transactions"},
   ],
  },
  {

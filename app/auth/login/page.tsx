@@ -1,19 +1,11 @@
-"use client";
-import LoginForm from "@/components/core/modal/LoginForm";
-import {useSearchParams} from "next/navigation";
-import {Suspense} from "react";
+import {Metadata} from "next";
+import LoginPageWrapper from "@/components/layouts/auth/LoginPageWrapper";
 
-function LoginContent() {
- const searchParams = useSearchParams();
- const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-
- return <LoginForm searchParams={{callbackUrl}} />;
-}
+export const metadata: Metadata = {
+ title: "Login Sellaris - Solusi Bisnis yang Menyenangkan",
+ description: "Platform manajemen bisnis dengan pengalaman yang memukau",
+};
 
 export default function LoginPage() {
- return (
-  <Suspense fallback={<div>Loading...</div>}>
-   <LoginContent />
-  </Suspense>
- );
+ return <LoginPageWrapper />;
 }
