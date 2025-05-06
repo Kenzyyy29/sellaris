@@ -23,7 +23,6 @@ const PaymentMethodsPage = () => {
  const {
   methods,
   loading,
-  error: _error,
   addMethod,
   updateMethod,
   toggleMethodStatus,
@@ -166,12 +165,6 @@ const PaymentMethodsPage = () => {
      <FiPlus /> Tambah Metode
     </motion.button>
    </div>
-
-   {_error && (
-    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-     {_error}
-    </div>
-   )}
 
    {loading ? (
     <div className="flex justify-center items-center h-64">
