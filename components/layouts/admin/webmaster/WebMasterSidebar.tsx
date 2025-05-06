@@ -34,6 +34,7 @@ const webmasterLinks = [
   subItems: [
    {name: "Packages", path: "/admin/webmaster/subscription/packages"},
    {name: "Transactions", path: "/admin/webmaster/subscription/transactions"},
+   {name: "Payment Methods", path: "/admin/webmaster/subscription/payment-methods"},
   ],
  },
  {
@@ -63,11 +64,6 @@ const webmasterLinks = [
   name: "Blog",
   path: "/admin/webmaster/blog",
   icon: <FaPencil />,
- },
- {
-  name: "Payment Methods",
-  path: "/admin/webmaster/payment-methods",
-  icon: <FaWallet />,
  },
  {
   name: "System",
