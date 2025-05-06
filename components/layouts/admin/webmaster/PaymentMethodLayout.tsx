@@ -49,17 +49,6 @@ const PaymentMethodLayout = () => {
   methodName: "",
  });
 
- const handleInputChange = (
-  e: React.ChangeEvent<
-   HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  >
- ) => {
-  const {name, value} = e.target;
-  setFormData((prev) => ({
-   ...prev,
-   [name]: value,
-  }));
- };
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
