@@ -5,7 +5,7 @@ import {motion} from "framer-motion";
 import {FaBoxOpen, FaSearch, FaTrash, FaEdit, FaPlus} from "react-icons/fa";
 import DeletePackageModal from "./DeletePackageModal";
 import EditPackageModal from "./EditPackageModal";
-import {useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
+import {SubscriptionPackage, useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
 
 const containerVariants = {
  hidden: {opacity: 0, y: 20},
@@ -46,7 +46,7 @@ export default function SubscriptionPackagesPage() {
  const [searchTerm, setSearchTerm] = useState("");
  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
- const [selectedPackage, setSelectedPackage] = useState<any>(null);
+ const [selectedPackage, setSelectedPackage] = useState<SubscriptionPackage | null>(null);
  const [isProcessing, setIsProcessing] = useState(false);
 
  const formatCurrency = (value: number) => {
@@ -65,12 +65,12 @@ export default function SubscriptionPackagesPage() {
   );
  }, [packages, searchTerm]);
 
- const handleDeleteClick = (pkg: any) => {
+ const handleDeleteClick = (pkg: SubscriptionPackage | null) => {
   setSelectedPackage(pkg);
   setIsDeleteModalOpen(true);
  };
 
- const handleEditClick = (pkg: any) => {
+ const handleEditClick = (pkg: SubscriptionPackage | null) => {
   setSelectedPackage(pkg);
   setIsEditModalOpen(true);
  };
@@ -96,7 +96,7 @@ export default function SubscriptionPackagesPage() {
   }
  };
 
- const handleSavePackage = async (packageData: any) => {
+ const handleSavePackage = async (packageData: SubscriptionPackage) => {
   setIsProcessing(true);
   try {
    if (packageData.id) {

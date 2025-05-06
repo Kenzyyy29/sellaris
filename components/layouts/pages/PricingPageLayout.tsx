@@ -10,12 +10,12 @@ import {
  FaBolt,
  FaShieldAlt,
 } from "react-icons/fa";
-import {useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
+import {SubscriptionPackage, useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
 import {useEffect, useState} from "react";
 
 const PricingPageLayout = () => {
  const {packages, loading} = useSubscriptionPackages();
- const [activePackages, setActivePackages] = useState<any[]>([]);
+ const [activePackages, setActivePackages] = useState<SubscriptionPackage[]>([]);
 
  useEffect(() => {
   const filtered = packages.filter((pkg) => pkg.isActive);

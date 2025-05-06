@@ -5,7 +5,7 @@ interface EditPackageModalProps {
  isOpen: boolean;
  onClose: () => void;
  packageData: SubscriptionPackage | null;
- onSave: (packageData: any) => Promise<{success: boolean; error?: string}>;
+ onSave: (packageData: SubscriptionPackage) => Promise<{success: boolean; error?: string}>;
  isProcessing: boolean;
 }
 
