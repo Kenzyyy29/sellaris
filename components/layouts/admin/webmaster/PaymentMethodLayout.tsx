@@ -7,7 +7,6 @@ import {
  FiEdit,
  FiTrash2,
  FiX,
- FiCheck,
  FiToggleLeft,
  FiToggleRight,
  FiCreditCard,
@@ -17,6 +16,8 @@ import {
 import {usePaymentMethods, PaymentMethod} from "@/lib/hooks/usePaymentMethod";
 import {toast} from "react-hot-toast";
 import { BsBank } from "react-icons/bs";
+import DeletePaymentMethodModal from "./DeletePaymentMethodModal";
+import Image from "next/image";
 
 const PaymentMethodsPage = () => {
  const {
@@ -101,15 +102,30 @@ const PaymentMethodsPage = () => {
   setIsModalOpen(true);
  };
 
- const handleDelete = async (id: string) => {
-  if (confirm("Apakah Anda yakin ingin menghapus metode pembayaran ini?")) {
-   const result = await deleteMethod(id);
-   if (result.success) {
-    toast.success("Metode pembayaran berhasil dihapus");
-   } else {
-    toast.error(result.error || "Gagal menghapus metode pembayaran");
-   }
+ const [deleteModal, setDeleteModal] = useState({
+  isOpen: false,
+  methodId: "",
+  methodName: "",
+ });
+
+ // Fungsi untuk handle delete
+ const handleDeleteClick = (id: string, name: string) => {
+  setDeleteModal({
+   isOpen: true,
+   methodId: id,
+   methodName: name,
+  });
+ };
+
+ // Fungsi untuk konfirmasi delete
+ const confirmDelete = async () => {
+  const result = await deleteMethod(deleteModal.methodId);
+  if (result.success) {
+   toast.success("Metode pembayaran berhasil dihapus");
+  } else {
+   toast.error(result.error || "Gagal menghapus metode pembayaran");
   }
+  setDeleteModal({isOpen: false, methodId: "", methodName: ""});
  };
 
  const handleToggleStatus = async (id: string, isActive: boolean) => {
@@ -196,10 +212,12 @@ const PaymentMethodsPage = () => {
            <div className="flex items-center">
             <div className="flex-shrink-0 h-10 w-10 flex items-center justify-center">
              {method.logoUrl ? (
-              <img
+              <Image
                className="h-10 w-10 rounded-full"
                src={method.logoUrl}
                alt={method.name}
+               width={40}
+               height={40}
               />
              ) : (
               getMethodIcon(method.type)
@@ -245,7 +263,7 @@ const PaymentMethodsPage = () => {
             <FiEdit className="inline" />
            </button>
            <button
-            onClick={() => handleDelete(method.id!)}
+            onClick={() => handleDeleteClick(method.id!, method.name)}
             className="text-red-600 hover:text-red-900">
             <FiTrash2 className="inline" />
            </button>
@@ -265,7 +283,7 @@ const PaymentMethodsPage = () => {
       initial={{opacity: 0}}
       animate={{opacity: 1}}
       exit={{opacity: 0}}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
       onClick={() => setIsModalOpen(false)}>
       <motion.div
        initial={{scale: 0.9, y: 20}}
@@ -459,6 +477,12 @@ const PaymentMethodsPage = () => {
      </motion.div>
     )}
    </AnimatePresence>
+   <DeletePaymentMethodModal
+    isOpen={deleteModal.isOpen}
+    onClose={() => setDeleteModal({...deleteModal, isOpen: false})}
+    onConfirm={confirmDelete}
+    methodName={deleteModal.methodName}
+   />
   </div>
  );
 };

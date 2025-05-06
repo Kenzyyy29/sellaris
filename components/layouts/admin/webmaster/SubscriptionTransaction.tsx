@@ -123,7 +123,7 @@ export default function SubscriptionTransactions() {
 
  return (
   <motion.div
-   className="container mx-auto px-4 py-8"
+   className="container mx-auto px-4 py-8 text-black"
    initial="hidden"
    animate="visible"
    variants={containerVariants}>

@@ -1,84 +1,71 @@
-// DeletePaymentMethodModal.tsx
-"use client";
-
-import {motion} from "framer-motion";
-import {FiAlertTriangle} from "react-icons/fi";
+import {motion, AnimatePresence} from "framer-motion";
+import {FiAlertTriangle, FiTrash2, FiX} from "react-icons/fi";
 
 interface DeletePaymentMethodModalProps {
  isOpen: boolean;
  onClose: () => void;
  onConfirm: () => void;
- isLoading: boolean;
- title: string;
- message: string;
+ methodName: string;
 }
 
-export default function DeletePaymentMethodModal({
+const DeletePaymentMethodModal = ({
  isOpen,
  onClose,
  onConfirm,
- isLoading,
- title,
- message,
-}: DeletePaymentMethodModalProps) {
- const handleOverlayClick = (e: React.MouseEvent) => {
-  if (e.target === e.currentTarget) {
-   onClose();
-  }
- };
-
- if (!isOpen) return null;
-
+ methodName,
+}: DeletePaymentMethodModalProps) => {
  return (
-  <div className="fixed inset-0 z-50 overflow-y-auto">
-   <motion.div
-    initial={{opacity: 0}}
-    animate={{opacity: 1}}
-    exit={{opacity: 0}}
-    className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-    onClick={handleOverlayClick}
-   />
-
-   <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+  <AnimatePresence>
+   {isOpen && (
     <motion.div
-     initial={{scale: 0.95, opacity: 0}}
-     animate={{scale: 1, opacity: 1}}
-     exit={{scale: 0.95, opacity: 0}}
-     className="inline-block align-bottom bg-white rounded-xl shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-     onClick={(e) => e.stopPropagation()}>
-     <div className="px-6 py-6">
-      <div className="sm:flex sm:items-start">
-       <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-        <FiAlertTriangle className="h-6 w-6 text-red-600" />
-       </div>
-       <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">{title}</h3>
-        <div className="mt-2">
-         <p className="text-sm text-gray-500">{message}</p>
-        </div>
+     initial={{opacity: 0}}
+     animate={{opacity: 1}}
+     exit={{opacity: 0}}
+     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+     onClick={onClose}>
+     <motion.div
+      initial={{scale: 0.9, y: 20}}
+      animate={{scale: 1, y: 0}}
+      exit={{scale: 0.9, y: 20}}
+      className="bg-white rounded-lg shadow-xl w-full max-w-md"
+      onClick={(e) => e.stopPropagation()}>
+      <div className="flex justify-between items-center border-b px-6 py-4">
+       <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+        <FiAlertTriangle className="text-yellow-500" />
+        Konfirmasi Penghapusan
+       </h3>
+       <button
+        onClick={onClose}
+        className="text-gray-400 hover:text-gray-500">
+        <FiX className="h-6 w-6" />
+       </button>
+      </div>
+      <div className="p-6">
+       <p className="text-gray-700 mb-6">
+        Apakah Anda yakin ingin menghapus metode pembayaran{" "}
+        <span className="font-semibold">{methodName}</span>? Tindakan ini tidak
+        dapat dibatalkan.
+       </p>
+       <div className="flex justify-end space-x-3">
+        <button
+         type="button"
+         onClick={onClose}
+         className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+         Batal
+        </button>
+        <button
+         type="button"
+         onClick={onConfirm}
+         className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center gap-2">
+         <FiTrash2 /> Hapus
+        </button>
        </div>
       </div>
-     </div>
-     <div className="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end space-x-3">
-      <button
-       type="button"
-       disabled={isLoading}
-       onClick={onClose}
-       className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-       Cancel
-      </button>
-      <button
-       type="button"
-       disabled={isLoading}
-       onClick={onConfirm}
-       className={`px-4 py-2 rounded-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${
-        isLoading ? "bg-red-400" : "bg-red-600 hover:bg-red-700"
-       }`}>
-       {isLoading ? "Deleting..." : "Delete"}
-      </button>
-     </div>
+     </motion.div>
     </motion.div>
-   </div>
-  </div>
+   )}
+  </AnimatePresence>
  );
-}
+};
+
+export default DeletePaymentMethodModal;
