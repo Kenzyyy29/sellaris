@@ -36,10 +36,10 @@ const firestore = getFirestore(app);
 const PaymentInstructionLayout = () => {
  const searchParams = useSearchParams();
  const transactionId = searchParams.get("transactionId");
- const [transaction, setTransaction] = useState<Transaction | null>(null);
+ const [_transaction, setTransaction] = useState<Transaction | null>(null);
  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
  const [isLoading, setIsLoading] = useState(true);
- const [_copied, setCopied] = useState(false);
+ const [_, setCopied] = useState(false);
 
  useEffect(() => {
   const fetchData = async () => {
@@ -59,6 +59,7 @@ const PaymentInstructionLayout = () => {
       ...transactionData,
       createdAt: transactionData.createdAt?.toDate(),
      } as Transaction;
+     setTransaction(transaction);
 
      // Get payment method
      const methodDoc = await getDoc(
@@ -103,7 +104,7 @@ const PaymentInstructionLayout = () => {
   );
  }
 
- if (!transaction || !paymentMethod) {
+ if (!_transaction || !paymentMethod) {
   return (
    <div className="min-h-screen flex items-center justify-center">
     <div className="text-center p-6 max-w-md bg-red-50 rounded-lg">
@@ -156,14 +157,14 @@ const PaymentInstructionLayout = () => {
         </h2>
         <div className="space-y-2">
          <p>
-          <span className="font-medium">ID Transaksi:</span> {transaction.id}
+          <span className="font-medium">ID Transaksi:</span> {_transaction.id}
          </p>
          <p>
-          <span className="font-medium">Paket:</span> {transaction.packageName}
+          <span className="font-medium">Paket:</span> {_transaction.packageName}
          </p>
          <p>
           <span className="font-medium">Total Pembayaran:</span>{" "}
-          {formatPrice(transaction.amount)}
+          {formatPrice(_transaction.amount)}
          </p>
          <p>
           <span className="font-medium">Status:</span>{" "}

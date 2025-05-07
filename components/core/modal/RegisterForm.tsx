@@ -3,7 +3,6 @@ import {motion} from "framer-motion";
 import {useState} from "react";
 import OtpVerification from "./OtpVerification";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
 import {
  FiUser,
  FiMail,
