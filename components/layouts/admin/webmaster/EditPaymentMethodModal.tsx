@@ -13,7 +13,6 @@ interface EditPaymentMethodModalProps {
 }
 
 const EditPaymentMethodModal = ({
- isOpen,
  onClose,
  onSubmit,
  initialData,

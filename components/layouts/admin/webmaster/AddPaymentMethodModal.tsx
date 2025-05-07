@@ -13,7 +13,6 @@ interface AddPaymentMethodModalProps {
 }
 
 const AddPaymentMethodModal = ({
- isOpen,
  onClose,
  onSubmit,
  windowHeight,
