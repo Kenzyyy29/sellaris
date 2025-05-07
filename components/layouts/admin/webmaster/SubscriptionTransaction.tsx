@@ -2,9 +2,10 @@
 
 import {useMemo, useState} from "react";
 import {motion} from "framer-motion";
-import {FaSearch, FaCheck, FaTimes, FaTrash} from "react-icons/fa";
+import {FaSearch, FaCheck, FaTimes, FaTrash, FaEye} from "react-icons/fa";
 import {SubscriptionTransaction, useSubscriptionTransactions} from "@/lib/hooks/useSubscriptionTransaction";
 import DeleteTransactionModal from "./DeleteTransactionModal";
+import { useRouter } from "next/navigation";
 
 const containerVariants = {
  hidden: {opacity: 0, y: 20},
@@ -65,6 +66,11 @@ export default function SubscriptionTransactions() {
  const [activeTab, setActiveTab] = useState<
   "all" | "pending" | "completed" | "failed"
  >("all");
+ const {push} = useRouter()
+
+ const handleViewDetail = (transactionId: string) => {
+  push(`/admin/webmaster/subscription/transactions/${transactionId}`);
+ };
 
  const filteredTransactions = useMemo(() => {
   let filtered = transactions.filter(
@@ -294,6 +300,12 @@ export default function SubscriptionTransactions() {
              </button>
             </>
            )}
+           <button
+            onClick={() => handleViewDetail(txn.id!)}
+            className="text-blue-600 hover:text-blue-900 p-2 rounded-full hover:bg-blue-50 transition-colors"
+            title="View Detail">
+            <FaEye className="text-lg" />
+           </button>
            <button
             onClick={() => handleDeleteClick(txn)}
             disabled={isProcessing}

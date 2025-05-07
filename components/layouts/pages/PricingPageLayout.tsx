@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import {SubscriptionPackage, useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
 import {useEffect, useState} from "react";
+import Link from "next/link";
 
 const PricingPageLayout = () => {
  const {packages, loading} = useSubscriptionPackages();
@@ -182,16 +183,16 @@ const PricingPageLayout = () => {
              ))}
             </ul>
            </div>
-
            {/* CTA Button */}
-           <div className="mt-auto pt-4">
+           // Replace the button in your pricing card with:
+           <Link href={`/pricing/confirmation?packageId=${pkg.id}`}>
             <motion.button
              whileHover={{scale: 1.02}}
              whileTap={{scale: 0.98}}
              className={`w-full py-3 px-6 rounded-lg text-lg font-semibold text-white shadow-md transition-colors ${theme.button}`}>
              Mulai Sekarang
             </motion.button>
-           </div>
+           </Link>
           </div>
          </motion.div>
         </div>

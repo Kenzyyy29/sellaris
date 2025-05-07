@@ -24,6 +24,7 @@ const disableNavbar = [
  "/unauthorized",
  "/forgot-password",
  "/reset-password",
+ "/pricing/confirmation",
 ];
 const disableFooter = [
  "/auth/login",
