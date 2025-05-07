@@ -1,51 +1,35 @@
 "use client"
+
 import {motion} from "framer-motion";
 import {FiX} from "react-icons/fi";
 import {PaymentMethod} from "@/lib/hooks/usePaymentMethod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-interface EditPaymentMethodModalProps {
+interface AddPaymentMethodModalProps {
  isOpen: boolean;
  onClose: () => void;
  onSubmit: (formData: Omit<PaymentMethod, "id">) => void;
- initialData: PaymentMethod;
  windowHeight: number;
 }
 
-const EditPaymentMethodModal = ({
+const AddPaymentMethodModal = ({
  isOpen,
  onClose,
  onSubmit,
- initialData,
  windowHeight,
-}: EditPaymentMethodModalProps) => {
+}: AddPaymentMethodModalProps) => {
  const [formData, setFormData] = useState<Omit<PaymentMethod, "id">>({
-  name: initialData.name,
-  description: initialData.description,
-  type: initialData.type,
-  accountName: initialData.accountName,
-  accountNumber: initialData.accountNumber,
-  logoUrl: initialData.logoUrl,
-  isActive: initialData.isActive,
-  fee: initialData.fee,
-  feeType: initialData.feeType,
-  instructions: initialData.instructions || "",
+  name: "",
+  description: "",
+  type: "bank",
+  accountName: "",
+  accountNumber: "",
+  logoUrl: "",
+  isActive: true,
+  fee: 0,
+  feeType: "fixed",
+  instructions: "",
  });
-
- useEffect(() => {
-  setFormData({
-   name: initialData.name,
-   description: initialData.description,
-   type: initialData.type,
-   accountName: initialData.accountName,
-   accountNumber: initialData.accountNumber,
-   logoUrl: initialData.logoUrl,
-   isActive: initialData.isActive,
-   fee: initialData.fee,
-   feeType: initialData.feeType,
-   instructions: initialData.instructions || "",
-  });
- }, [initialData]);
 
  const handleInputChange = (
   e: React.ChangeEvent<
@@ -80,7 +64,7 @@ const EditPaymentMethodModal = ({
     onClick={(e) => e.stopPropagation()}>
     <div className="flex-shrink-0 flex justify-between items-center border-b px-6 py-4">
      <h3 className="text-lg font-medium text-gray-900">
-      Edit Metode Pembayaran
+      Tambah Metode Pembayaran
      </h3>
      <button
       onClick={onClose}
@@ -253,7 +237,7 @@ const EditPaymentMethodModal = ({
         <button
          type="submit"
          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-         Simpan Perubahan
+         Tambah Metode
         </button>
        </div>
       </div>
@@ -264,4 +248,4 @@ const EditPaymentMethodModal = ({
  );
 };
 
-export default EditPaymentMethodModal;
+export default AddPaymentMethodModal;
