@@ -7,9 +7,10 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
- return (
-  <div>
-   <RegisterForm />
-  </div>
- );
+ const handleRegisterComplete = () => {
+  // Handle what happens after successful registration
+  // For example, redirect to dashboard
+  window.location.href = "/dashboard";
+ };
+ return <RegisterForm onRegisterComplete={handleRegisterComplete} />;
 }
