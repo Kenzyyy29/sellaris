@@ -1,5 +1,5 @@
 "use client";
-import {signOut} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {motion, AnimatePresence} from "framer-motion";
@@ -161,6 +161,7 @@ export default function Sidebar({
  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
   {}
  );
+ const {data: session, status: sessionStatus} = useSession();
 
  const toggleItemExpand = (path: string) => {
   setExpandedItems((prev) => {
@@ -243,11 +244,12 @@ export default function Sidebar({
          href="/"
          onClick={() => isMobile && setSidebarOpen(false)}>
          <h1
-          className="text-3xl font-bold mb-8 italic text-white text-center"
+          className="text-3xl font-bold mb-2 italic text-white text-center"
           style={{fontFamily: "'Raleway', sans-serif"}}>
           SELLARIS
          </h1>
         </Link>
+        <h1 className="text-center mb-8">Hi, {session?.user?.name}</h1>
 
         <ul className="flex flex-col gap-2 w-full">
          {adminLinks.map((link) => (

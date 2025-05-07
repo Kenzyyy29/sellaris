@@ -1,116 +1,182 @@
 "use client";
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {usePricingConfirmation} from "@/lib/hooks/usePricingConfirmation";
 import {
  FaCheck,
  FaArrowLeft,
  FaCreditCard,
- FaRegCheckCircle,
  FaCircle,
 } from "react-icons/fa";
 import Link from "next/link";
 import {motion} from "framer-motion";
 import {addDoc, collection, getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
+import {useSession} from "next-auth/react";
+import RegisterForm from "@/components/core/modal/RegisterForm";
+import CompanyForm from "@/components/core/modal/CompanyForm";
 
 const firestore = getFirestore(app);
 
 const PricingConfirmationLayout = () => {
-const router = useRouter();
-const searchParams = useSearchParams();
-const packageId = searchParams.get("packageId");
-const {selectedPackage, paymentMethods, loading, error} =
- usePricingConfirmation(packageId || "");
-const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
-const [isSubmitting, setIsSubmitting] = useState(false);
+  const {data: session, status: sessionStatus} = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const packageId = searchParams.get("packageId");
+  const {selectedPackage, paymentMethods, loading, error} =
+   usePricingConfirmation(packageId || "");
 
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState<"payment" | "register" | "company">(
+   "payment"
+  );
+  const [companyData, setCompanyData] = useState<any>(null);
 
- const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("id-ID", {
-   style: "currency",
-   currency: "IDR",
-   minimumFractionDigits: 0,
-  }).format(price);
- };
+  useEffect(() => {
+   if (sessionStatus === "unauthenticated") {
+    setStep("register");
+   } else if (
+    sessionStatus === "authenticated" &&
+    !session?.user?.companyData
+   ) {
+    setStep("company");
+   } else {
+    setStep("payment");
+   }
+  }, [session, sessionStatus]);
 
- const handlePaymentSelection = (methodId: string) => {
-  setSelectedMethod(methodId);
- };
+  const formatPrice = (price: number) => {
+   return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+   }).format(price);
+  };
 
- const handleSubmit = async () => {
-  if (!selectedMethod || !selectedPackage) return;
+  const handlePaymentSelection = (methodId: string) => {
+   setSelectedMethod(methodId);
+  };
 
-  setIsSubmitting(true);
-  try {
-   // Create transaction record
-   await addDoc(collection(firestore, "subscription_transactions"), {
-    userId: "current-user-id", // Ganti dengan user ID sesungguhnya
-    packageId: selectedPackage.id,
-    packageName: selectedPackage.name,
-    amount: selectedPackage.price,
-    status: "pending",
-    paymentMethod: selectedMethod,
-    createdAt: new Date(),
-    userEmail: "user@example.com", // Ganti dengan email user
-    userName: "Current User", // Ganti dengan nama user
-   });
+  const handleRegisterComplete = () => {
+   setStep("company");
+  };
 
-   // Redirect ke halaman instruksi pembayaran
-   router.push(
-    `/pricing/confirmation/payment-instruction?transactionId=${newTransaction.id}`
+  const handleCompanySubmit = async (data: any) => {
+   try {
+    const response = await fetch("/api/user/update-company", {
+     method: "POST",
+     headers: {
+      "Content-Type": "application/json",
+     },
+     body: JSON.stringify({
+      userId: session?.user?.id,
+      companyData: data,
+     }),
+    });
+
+    if (!response.ok) throw new Error("Failed to save company data");
+
+    setCompanyData(data);
+    setStep("payment");
+   } catch (err) {
+    console.error("Error saving company data:", err);
+   }
+  };
+
+  const handleSubmit = async () => {
+   if (!selectedMethod || !selectedPackage) return;
+
+   setIsSubmitting(true);
+   try {
+    const transactionData = {
+     userId: session?.user?.id || "guest",
+     packageId: selectedPackage.id,
+     packageName: selectedPackage.name,
+     amount: selectedPackage.price,
+     status: "pending",
+     paymentMethod: selectedMethod,
+     createdAt: new Date(),
+     userEmail: session?.user?.email || "guest@example.com",
+     userName: session?.user?.name || "Guest User",
+     companyData: companyData || session?.user?.companyData || null,
+    };
+
+    const transactionRef = await addDoc(
+     collection(firestore, "subscription_transactions"),
+     transactionData
+    );
+
+    router.push(
+     `/pricing/confirmation/payment-instruction?transactionId=${transactionRef.id}`
+    );
+   } catch (err) {
+    console.error("Error creating transaction:", err);
+   } finally {
+    setIsSubmitting(false);
+   }
+  };
+
+  if (loading || sessionStatus === "loading") {
+   return (
+    <div className="min-h-screen flex items-center justify-center">
+     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
    );
-  } catch (err) {
-   console.error("Error creating transaction:", err);
-  } finally {
-   setIsSubmitting(false);
   }
- };
 
- if (loading) {
-  return (
-   <div className="min-h-screen flex items-center justify-center">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-   </div>
-  );
- }
-
- if (error) {
-  return (
-   <div className="min-h-screen flex items-center justify-center">
-    <div className="text-center p-6 max-w-md bg-red-50 rounded-lg">
-     <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
-     <p className="text-red-500 mb-4">{error}</p>
-     <Link
-      href="/pricing"
-      className="text-blue-600 hover:underline">
-      Kembali ke halaman pricing
-     </Link>
+  if (error) {
+   return (
+    <div className="min-h-screen flex items-center justify-center">
+     <div className="text-center p-6 max-w-md bg-red-50 rounded-lg">
+      <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
+      <p className="text-red-500 mb-4">{error}</p>
+      <Link
+       href="/pricing"
+       className="text-blue-600 hover:underline">
+       Kembali ke halaman pricing
+      </Link>
+     </div>
     </div>
-   </div>
-  );
- }
+   );
+  }
 
- if (!selectedPackage) {
-  return (
-   <div className="min-h-screen flex items-center justify-center">
-    <div className="text-center p-6 max-w-md bg-yellow-50 rounded-lg">
-     <h2 className="text-xl font-bold text-yellow-600 mb-2">
-      Paket tidak ditemukan
-     </h2>
-     <p className="text-yellow-700 mb-4">
-      Paket yang Anda cari tidak tersedia.
-     </p>
-     <Link
-      href="/pricing"
-      className="text-blue-600 hover:underline">
-      Kembali ke halaman pricing
-     </Link>
+  if (!selectedPackage) {
+   return (
+    <div className="min-h-screen flex items-center justify-center">
+     <div className="text-center p-6 max-w-md bg-yellow-50 rounded-lg">
+      <h2 className="text-xl font-bold text-yellow-600 mb-2">
+       Paket tidak ditemukan
+      </h2>
+      <p className="text-yellow-700 mb-4">
+       Paket yang Anda cari tidak tersedia.
+      </p>
+      <Link
+       href="/pricing"
+       className="text-blue-600 hover:underline">
+       Kembali ke halaman pricing
+      </Link>
+     </div>
     </div>
-   </div>
-  );
- }
+   );
+  }
+
+  if (step === "register") {
+   return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+     <RegisterForm onRegisterComplete={handleRegisterComplete} />
+    </div>
+   );
+  }
+
+  if (step === "company") {
+   return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+     <CompanyForm onSubmit={handleCompanySubmit} />
+    </div>
+   );
+  }
 
  return (
   <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -125,13 +191,14 @@ const [isSubmitting, setIsSubmitting] = useState(false);
      initial={{opacity: 0, y: 20}}
      animate={{opacity: 1, y: 0}}
      className="bg-white rounded-xl shadow-md overflow-hidden">
-     {/* Package Summary */}
      <div className="p-6 border-b border-gray-200">
       <h1 className="text-2xl font-bold text-gray-800 mb-2">
-       Konfirmasi Langganan
+       {session ? "Konfirmasi Langganan" : "Lengkapi Data Untuk Melanjutkan"}
       </h1>
       <p className="text-gray-600">
-       Review pesanan Anda sebelum melanjutkan pembayaran
+       {session
+        ? "Review pesanan Anda sebelum melanjutkan pembayaran"
+        : "Silakan lengkapi data diri dan perusahaan untuk melanjutkan"}
       </p>
      </div>
 
@@ -172,7 +239,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
        Metode Pembayaran:
       </h2>
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4">
        {paymentMethods.map((method) => (
         <motion.div
          key={method.id}

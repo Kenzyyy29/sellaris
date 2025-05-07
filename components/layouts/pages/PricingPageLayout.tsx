@@ -184,7 +184,6 @@ const PricingPageLayout = () => {
             </ul>
            </div>
            {/* CTA Button */}
-           // Replace the button in your pricing card with:
            <Link href={`/pricing/confirmation?packageId=${pkg.id}`}>
             <motion.button
              whileHover={{scale: 1.02}}

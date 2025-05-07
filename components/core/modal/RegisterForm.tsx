@@ -56,7 +56,7 @@ const buttonHoverVariants = {
  },
 };
 
-export default function RegisterForm() {
+export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: () => void}) {
  const [error, setError] = useState("");
  const [isLoading, setIsLoading] = useState(false);
  const [email, setEmail] = useState("");
@@ -111,7 +111,7 @@ export default function RegisterForm() {
 
  const handleOTPVerificationSuccess = () => {
   setShowOtp(false);
-  push("/dashboard");
+  onRegisterComplete();
  };
 
  if (showOtp) {

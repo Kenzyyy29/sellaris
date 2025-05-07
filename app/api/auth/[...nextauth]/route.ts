@@ -60,6 +60,7 @@ const authOptions: NextAuthOptions = {
    if (user) {
     token.id = user.id;
     token.role = user.role;
+    token.companyData = user.companyData;
    }
    return token;
   },
@@ -67,6 +68,7 @@ const authOptions: NextAuthOptions = {
    if (session.user) {
     session.user.id = token.id;
     session.user.role = token.role;
+    
    }
    return session;
   },

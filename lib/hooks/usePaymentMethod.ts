@@ -13,7 +13,7 @@ import {app} from "@/lib/firebase/init";
 const firestore = getFirestore(app);
 
 export interface PaymentMethod {
- id?: string;
+ id: string;
  name: string;
  description: string;
  type: "bank" | "e-wallet" | "qris" | "other";
