@@ -1,5 +1,5 @@
 import {Metadata} from "next";
-import RegisterForm from "@/components/core/modal/RegisterForm";
+import RegisterPageWrapper from "@/components/layouts/auth/RegisterPageWrapper";
 
 export const metadata: Metadata = {
  title: "Register Sellaris - Solusi Bisnis yang Menyenangkan",
@@ -7,10 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
- const handleRegisterComplete = () => {
-  // Handle what happens after successful registration
-  // For example, redirect to dashboard
-  window.location.href = "/dashboard";
- };
- return <RegisterForm onRegisterComplete={handleRegisterComplete} />;
+ return <RegisterPageWrapper/>
 }
