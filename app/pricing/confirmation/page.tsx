@@ -1,5 +1,10 @@
 import PricingConfirmationLayout from "@/components/layouts/pages/PricingConfirmationLayout";
+import {Suspense} from "react";
 
 export default function PricingConfirmationPage() {
- return <PricingConfirmationLayout />;
+ return (
+  <Suspense fallback={<div>Loading...</div>}>
+   <PricingConfirmationLayout />
+  </Suspense>
+ );
 }
