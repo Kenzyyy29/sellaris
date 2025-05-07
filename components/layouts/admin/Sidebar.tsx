@@ -161,7 +161,7 @@ export default function Sidebar({
  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
   {}
  );
- const {data: session, status: sessionStatus} = useSession();
+ const {data: session} = useSession();
 
  const toggleItemExpand = (path: string) => {
   setExpandedItems((prev) => {

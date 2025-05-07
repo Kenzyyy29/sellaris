@@ -9,8 +9,16 @@ import {
  FiMail,
 } from "react-icons/fi";
 
-const CompanyForm = ({onSubmit}: {onSubmit: (data: any) => void}) => {
- const [formData, setFormData] = useState({
+interface CompanyData {
+ companyName: string;
+ companyAddress: string;
+ companyNPWP: string;
+ companyPhone: string;
+ companyEmail: string;
+}
+
+const CompanyForm = ({onSubmit}: {onSubmit: (data: CompanyData) => void}) => {
+ const [formData, setFormData] = useState<CompanyData>({
   companyName: "",
   companyAddress: "",
   companyNPWP: "",

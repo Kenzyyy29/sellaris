@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
 import {
  doc,
  getDoc,
@@ -19,12 +19,11 @@ export const usePricingConfirmation = (packageId: string) => {
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState<string | null>(null);
 
- const fetchData = async () => {
+ const fetchData = useCallback(async () => {
   try {
    setLoading(true);
    setError(null);
 
-   // Fetch package
    if (packageId) {
     const packageDoc = await getDoc(
      doc(firestore, "subscription_packages", packageId)
@@ -42,7 +41,6 @@ export const usePricingConfirmation = (packageId: string) => {
     }
    }
 
-   // Fetch payment methods
    const paymentMethodsSnapshot = await getDocs(
     collection(firestore, "payment_methods")
    );
@@ -65,11 +63,11 @@ export const usePricingConfirmation = (packageId: string) => {
   } finally {
    setLoading(false);
   }
- };
+ }, [packageId]);
 
  useEffect(() => {
   fetchData();
- }, [packageId]);
+ }, [fetchData]);
 
  return {
   selectedPackage,

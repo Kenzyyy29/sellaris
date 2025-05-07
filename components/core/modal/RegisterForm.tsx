@@ -62,7 +62,6 @@ export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: 
  const [email, setEmail] = useState("");
  const [showOtp, setShowOtp] = useState(false);
  const [acceptedTerms, setAcceptedTerms] = useState(false);
- const {push} = useRouter();
 
  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();

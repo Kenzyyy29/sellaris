@@ -8,15 +8,38 @@ import {FaCheckCircle, FaCopy, FaArrowLeft, FaCreditCard} from "react-icons/fa";
 import Link from "next/link";
 import {motion} from "framer-motion";
 
+interface Transaction {
+ id: string;
+ packageId: string;
+ packageName: string;
+ amount: number;
+ status: string;
+ paymentMethod: string;
+ createdAt: Date;
+ userEmail: string;
+ userName: string;
+}
+
+interface PaymentMethod {
+ id: string;
+ name: string;
+ description: string;
+ accountName: string;
+ accountNumber: string;
+ feeType: "fixed" | "percentage";
+ fee: number;
+ instructions?: string;
+}
+
 const firestore = getFirestore(app);
 
 const PaymentInstructionLayout = () => {
  const searchParams = useSearchParams();
  const transactionId = searchParams.get("transactionId");
- const [transaction, setTransaction] = useState<any>(null);
- const [paymentMethod, setPaymentMethod] = useState<any>(null);
+ const [transaction, setTransaction] = useState<Transaction | null>(null);
+ const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
  const [isLoading, setIsLoading] = useState(true);
- const [copied, setCopied] = useState(false);
+ const [_copied, setCopied] = useState(false);
 
  useEffect(() => {
   const fetchData = async () => {
@@ -31,11 +54,11 @@ const PaymentInstructionLayout = () => {
     );
     if (transactionDoc.exists()) {
      const transactionData = transactionDoc.data();
-     setTransaction({
+     const transaction = {
       id: transactionDoc.id,
       ...transactionData,
       createdAt: transactionData.createdAt?.toDate(),
-     });
+     } as Transaction;
 
      // Get payment method
      const methodDoc = await getDoc(
@@ -45,7 +68,7 @@ const PaymentInstructionLayout = () => {
       setPaymentMethod({
        id: methodDoc.id,
        ...methodDoc.data(),
-      });
+      } as PaymentMethod);
      }
     }
    } catch (error) {

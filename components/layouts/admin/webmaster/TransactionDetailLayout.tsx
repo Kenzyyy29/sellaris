@@ -13,102 +13,160 @@ import Link from "next/link";
 
 const firestore = getFirestore(app);
 
+interface Transaction {
+ id: string;
+ userId: string;
+ packageId: string;
+ packageName: string;
+ amount: number;
+ status: "pending" | "completed" | "failed";
+ paymentMethod: string;
+ createdAt: Date;
+ completedAt?: Date;
+ userEmail: string;
+ userName: string;
+ companyData?: unknown; // Replace with proper type if possible
+}
+
+interface Package {
+ id: string;
+ name: string;
+ price: number;
+ duration: number;
+ durationType: "monthly" | "yearly";
+}
+
+interface PaymentMethod {
+ id: string;
+ name: string;
+ accountName: string;
+ accountNumber: string;
+ feeType: "fixed" | "percentage";
+ fee: number;
+}
+
 const TransactionDetailLayout = () => {
  const {id} = useParams();
- const [transaction, setTransaction] = useState<any>(null);
- const [packageData, setPackageData] = useState<any>(null);
- const [paymentMethod, setPaymentMethod] = useState<any>(null);
+  const [transaction, setTransaction] = useState<Transaction | null>(null);
+  const [packageData, setPackageData] = useState<Package | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+   null
+  );
  const [isLoading, setIsLoading] = useState(true);
  const [isUpdating, setIsUpdating] = useState(false);
 
- useEffect(() => {
-  const fetchData = async () => {
-   try {
-    setIsLoading(true);
+useEffect(() => {
+ const fetchData = async () => {
+  try {
+   setIsLoading(true);
 
-    // Get transaction
-    const transactionDoc = await getDoc(
-     doc(firestore, "subscription_transactions", id as string)
-    );
-    if (transactionDoc.exists()) {
-     const transactionData = transactionDoc.data();
-     setTransaction({
-      id: transactionDoc.id,
-      ...transactionData,
-      createdAt: transactionData.createdAt?.toDate(),
-      completedAt: transactionData.completedAt?.toDate(),
-     });
+   // Get transaction
+   const transactionDoc = await getDoc(
+    doc(firestore, "subscription_transactions", id as string)
+   );
 
-     // Get package
-     if (transactionData.packageId) {
-      const packageDoc = await getDoc(
-       doc(firestore, "subscription_packages", transactionData.packageId)
-      );
-      if (packageDoc.exists()) {
-       setPackageData({
-        id: packageDoc.id,
-        ...packageDoc.data(),
-       });
-      }
-     }
+   if (transactionDoc.exists()) {
+    const transactionData = transactionDoc.data();
+    // Ensure all required fields are present
+    const completeTransaction: Transaction = {
+     id: transactionDoc.id,
+     userId: transactionData.userId || "",
+     packageId: transactionData.packageId || "",
+     packageName: transactionData.packageName || "",
+     amount: transactionData.amount || 0,
+     status: transactionData.status || "pending",
+     paymentMethod: transactionData.paymentMethod || "",
+     userEmail: transactionData.userEmail || "",
+     userName: transactionData.userName || "",
+     companyData: transactionData.companyData || null,
+     createdAt: transactionData.createdAt?.toDate() || new Date(),
+     completedAt: transactionData.completedAt?.toDate(),
+    };
+    setTransaction(completeTransaction);
 
-     // Get payment method
-     if (transactionData.paymentMethod) {
-      const methodDoc = await getDoc(
-       doc(firestore, "payment_methods", transactionData.paymentMethod)
-      );
-      if (methodDoc.exists()) {
-       setPaymentMethod({
-        id: methodDoc.id,
-        ...methodDoc.data(),
-       });
-      }
+    // Get package
+    if (transactionData.packageId) {
+     const packageDoc = await getDoc(
+      doc(firestore, "subscription_packages", transactionData.packageId)
+     );
+     if (packageDoc.exists()) {
+      const packageData = packageDoc.data();
+      setPackageData({
+       id: packageDoc.id,
+       name: packageData.name || "",
+       price: packageData.price || 0,
+       duration: packageData.duration || 1,
+       durationType: packageData.durationType || "monthly",
+       // Add other package properties
+      });
      }
     }
-   } catch (error) {
-    console.error("Error fetching data:", error);
-   } finally {
-    setIsLoading(false);
+
+    // Get payment method
+    if (transactionData.paymentMethod) {
+     const methodDoc = await getDoc(
+      doc(firestore, "payment_methods", transactionData.paymentMethod)
+     );
+     if (methodDoc.exists()) {
+      const methodData = methodDoc.data();
+      setPaymentMethod({
+       id: methodDoc.id,
+       name: methodData.name || "",
+       accountName: methodData.accountName || "",
+       accountNumber: methodData.accountNumber || "",
+       feeType: methodData.feeType || "fixed",
+       fee: methodData.fee || 0,
+      });
+     }
+    }
    }
-  };
-
-  fetchData();
- }, [id]);
-
- const formatDate = (date?: Date) => {
-  if (!date) return "-";
-  return new Intl.DateTimeFormat("id-ID", {
-   dateStyle: "medium",
-   timeStyle: "short",
-  }).format(date);
- };
-
- const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("id-ID", {
-   style: "currency",
-   currency: "IDR",
-   minimumFractionDigits: 0,
-  }).format(price);
- };
-
- const handleUpdateStatus = async (status: "completed" | "failed") => {
-  try {
-   setIsUpdating(true);
-   await updateDoc(doc(firestore, "subscription_transactions", id as string), {
-    status,
-    completedAt: new Date(),
-   });
-   setTransaction({
-    ...transaction,
-    status,
-    completedAt: new Date(),
-   });
   } catch (error) {
-   console.error("Error updating status:", error);
+   console.error("Error fetching data:", error);
   } finally {
-   setIsUpdating(false);
+   setIsLoading(false);
   }
  };
+
+ fetchData();
+}, [id]);
+
+ const formatDate = (date?: Date) => {
+    if (!date) return "-";
+    return new Intl.DateTimeFormat("id-ID", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+ const handleUpdateStatus = async (status: "completed" | "failed") => {
+    if (!transaction) return;
+    
+    try {
+      setIsUpdating(true);
+      await updateDoc(doc(firestore, "subscription_transactions", id as string), {
+        status,
+        completedAt: new Date(),
+      });
+      
+      setTransaction({
+        ...transaction,
+        status,
+        completedAt: new Date(),
+      });
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
  if (isLoading) {
   return (

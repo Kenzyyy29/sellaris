@@ -17,6 +17,14 @@ import {useSession} from "next-auth/react";
 import RegisterForm from "@/components/core/modal/RegisterForm";
 import CompanyForm from "@/components/core/modal/CompanyForm";
 
+interface CompanyFormData {
+ companyName: string;
+ companyAddress: string;
+ companyNPWP: string;
+ companyPhone: string;
+ companyEmail: string;
+}
+
 const firestore = getFirestore(app);
 
 const PricingConfirmationLayout = () => {
@@ -32,7 +40,7 @@ const PricingConfirmationLayout = () => {
   const [step, setStep] = useState<"payment" | "register" | "company">(
    "payment"
   );
-  const [companyData, setCompanyData] = useState<any>(null);
+  const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
 
   useEffect(() => {
    if (sessionStatus === "unauthenticated") {
@@ -63,7 +71,7 @@ const PricingConfirmationLayout = () => {
    setStep("company");
   };
 
-  const handleCompanySubmit = async (data: any) => {
+  const handleCompanySubmit = async (data: CompanyFormData) => {
    try {
     const response = await fetch("/api/user/update-company", {
      method: "POST",
