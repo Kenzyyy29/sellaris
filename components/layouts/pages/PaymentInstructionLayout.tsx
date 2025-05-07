@@ -39,7 +39,7 @@ const PaymentInstructionLayout = () => {
  const [transaction, setTransaction] = useState<Transaction | null>(null);
  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
  const [isLoading, setIsLoading] = useState(true);
- const [_isCopied, setCopied] = useState(false);
+ const [isCopied, setCopied] = useState(false);
 
  useEffect(() => {
   const fetchData = async () => {
@@ -207,6 +207,9 @@ const PaymentInstructionLayout = () => {
              className="text-blue-600 hover:text-blue-800"
              title="Salin">
              <FaCopy />
+             {isCopied && (
+              <span className="ml-1 text-xs text-green-600">Copied!</span>
+             )}
             </button>
            </div>
           </div>
