@@ -19,7 +19,7 @@ import Image from "next/image";
 import AddPaymentMethodModal from "./AddPaymentMethodModal";
 import EditPaymentMethodModal from "./EditPaymentMethodModal";
 
-const PaymentMethodsPage = () => {
+const PaymentMethodLayout   = () => {
  const {
   methods,
   loading,
@@ -280,4 +280,4 @@ const PaymentMethodsPage = () => {
  );
 };
 
-export default PaymentMethodsPage;
+export default PaymentMethodLayout ;
