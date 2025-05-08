@@ -2,7 +2,7 @@
 
 import {useMemo, useState} from "react";
 import {motion} from "framer-motion";
-import {FaBoxOpen, FaSearch, FaTrash, FaEdit, FaPlus} from "react-icons/fa";
+import {FaSearch, FaTrash, FaEdit, FaPlus} from "react-icons/fa";
 import DeletePackageModal from "./DeletePackageModal";
 import EditPackageModal from "./EditPackageModal";
 import {

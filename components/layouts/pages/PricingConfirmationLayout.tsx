@@ -6,7 +6,7 @@ import {usePricingConfirmation} from "@/lib/hooks/usePricingConfirmation";
 import {FaCheck, FaArrowLeft, FaCreditCard, FaCircle} from "react-icons/fa";
 import Link from "next/link";
 import {motion} from "framer-motion";
-import {addDoc, collection, doc, getDoc, getFirestore} from "firebase/firestore";
+import {addDoc, collection, getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
 import {useSession} from "next-auth/react";
 import RegisterForm from "@/components/core/modal/RegisterForm";
@@ -31,17 +31,13 @@ const PricingConfirmationLayout = () => {
   usePricingConfirmation(packageId || "");
  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
  const [isSubmitting, setIsSubmitting] = useState(false);
- const [step, setStep] = useState<"payment" | "register" | "company">(
+ const [step, setStep] = useState<"payment" | "register" >(
   "payment"
  );
-const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
-
 
 useEffect(() => {
  if (sessionStatus === "unauthenticated") {
   setStep("register");
- } else if (sessionStatus === "authenticated" && !session?.user?.companyData) {
-  setStep("company");
  } else {
   setStep("payment");
  }
@@ -59,11 +55,6 @@ useEffect(() => {
   setSelectedMethod(methodId);
  };
 
- const handleRegisterComplete = () => {
-  setStep("company");
- };
-
-
  const handleSubmit = async () => {
   if (!selectedMethod || !selectedPackage) return;
 
@@ -79,7 +70,6 @@ useEffect(() => {
    createdAt: new Date(),
    userEmail: session?.user?.email || "guest@example.com",
    userName: session?.user?.name || "Guest User",
-   companyData: companyData || session?.user?.companyData || null,
   };
 
   const transactionRef = await addDoc(
@@ -144,11 +134,10 @@ useEffect(() => {
  if (step === "register") {
   return (
    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-    <RegisterForm onRegisterComplete={handleRegisterComplete} />
+    <RegisterForm/>
    </div>
   );
  }
-
 
  return (
   <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

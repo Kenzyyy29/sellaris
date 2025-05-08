@@ -56,7 +56,7 @@ const buttonHoverVariants = {
  },
 };
 
-export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: () => void}) {
+export default function RegisterForm() {
  const [error, setError] = useState("");
  const [isLoading, setIsLoading] = useState(false);
  const [email, setEmail] = useState("");
