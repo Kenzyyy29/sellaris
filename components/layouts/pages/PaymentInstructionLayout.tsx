@@ -155,7 +155,7 @@ const PaymentInstructionLayout = () => {
         <h2 className="text-lg font-semibold text-gray-800 mb-3">
          Detail Transaksi
         </h2>
-        <div className="space-y-2">
+        <div className="space-y-2 text-gray-800">
          <p>
           <span className="font-medium">ID Transaksi:</span> {transaction.id}
          </p>
@@ -194,12 +194,14 @@ const PaymentInstructionLayout = () => {
          <div className="space-y-2">
           <div className="flex justify-between">
            <span className="text-gray-600">Nama Akun:</span>
-           <span className="font-medium">{paymentMethod.accountName}</span>
+           <span className="font-medium text-gray-800">
+            {paymentMethod.accountName}
+           </span>
           </div>
           <div className="flex justify-between">
            <span className="text-gray-600">Nomor Rekening:</span>
            <div className="flex items-center">
-            <span className="font-medium mr-2">
+            <span className="font-medium mr-2 text-gray-800">
              {paymentMethod.accountNumber}
             </span>
             <button
@@ -239,14 +241,6 @@ const PaymentInstructionLayout = () => {
         </li>
         <li>Simpan ID Transaksi Anda untuk referensi</li>
        </ul>
-      </div>
-
-      <div className="mt-6">
-       <Link
-        href="/dashboard"
-        className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-        Ke Dashboard Saya
-       </Link>
       </div>
      </div>
     </motion.div>

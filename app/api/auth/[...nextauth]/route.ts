@@ -3,6 +3,11 @@ import {compare} from "bcryptjs";
 import {NextAuthOptions} from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import {getFirestore} from "firebase/firestore";
+import {app} from "@/lib/firebase/init";
+import {doc, getDoc} from "firebase/firestore";
+
+const firestore = getFirestore(app);
 
 const authOptions: NextAuthOptions = {
  session: {
@@ -46,11 +51,19 @@ const authOptions: NextAuthOptions = {
      throw new Error("Akun belum terverifikasi");
     }
 
+    // Get company data from Firestore
+    let companyData = null;
+    const userDoc = await getDoc(doc(firestore, "users", user.id));
+    if (userDoc.exists()) {
+     companyData = userDoc.data().companyData;
+    }
+
     return {
      id: user.id,
      email: user.email,
      name: user.fullname,
      role: user.role,
+     companyData,
     };
    },
   }),
@@ -68,7 +81,7 @@ const authOptions: NextAuthOptions = {
    if (session.user) {
     session.user.id = token.id;
     session.user.role = token.role;
-    
+    session.user.companyData = token.companyData;
    }
    return session;
   },

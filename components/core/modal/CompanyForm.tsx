@@ -17,14 +17,21 @@ interface CompanyData {
  companyEmail: string;
 }
 
-const CompanyForm = ({onSubmit}: {onSubmit: (data: CompanyData) => void}) => {
- const [formData, setFormData] = useState<CompanyData>({
-  companyName: "",
-  companyAddress: "",
-  companyNPWP: "",
-  companyPhone: "",
-  companyEmail: "",
- });
+interface CompanyFormProps {
+ onSubmit: (data: CompanyData) => void;
+ initialData?: CompanyData;
+}
+
+const CompanyForm = ({onSubmit, initialData}: CompanyFormProps) => {
+  const [formData, setFormData] = useState<CompanyData>(
+   initialData || {
+    companyName: "",
+    companyAddress: "",
+    companyNPWP: "",
+    companyPhone: "",
+    companyEmail: "",
+   }
+  );
 
  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const {name, value} = e.target;

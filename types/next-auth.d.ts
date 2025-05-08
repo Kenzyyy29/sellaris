@@ -9,7 +9,13 @@ declare module "next-auth" {
    name?: string | null;
    email?: string | null;
    role?: string;
-   companyData?: any; // Tambahkan ini
+   companyData?: {
+    companyName: string;
+    companyAddress: string;
+    companyNPWP: string;
+    companyPhone: string;
+    companyEmail: string;
+   }; // Tambahkan ini
   } & DefaultSession["user"];
  }
 
