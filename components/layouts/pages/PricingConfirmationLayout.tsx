@@ -11,15 +11,6 @@ import {app} from "@/lib/firebase/init";
 import {useSession} from "next-auth/react";
 import RegisterForm from "@/components/core/modal/RegisterForm";
 
-
-interface CompanyFormData {
- companyName: string;
- companyAddress: string;
- companyNPWP: string;
- companyPhone: string;
- companyEmail: string;
-}
-
 const firestore = getFirestore(app);
 
 const PricingConfirmationLayout = () => {
