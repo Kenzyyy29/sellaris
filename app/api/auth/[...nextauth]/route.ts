@@ -32,6 +32,8 @@ const authOptions: NextAuthOptions = {
     if (!user) {
      throw new Error("User tidak ditemukan");
     }
+
+    // Untuk OTP flow tanpa password
     if (!credentials.password && user.verified) {
      return {
       id: user.id,
@@ -40,6 +42,8 @@ const authOptions: NextAuthOptions = {
       role: user.role,
      };
     }
+
+    // Untuk login biasa dengan password
     if (credentials.password) {
      const passwordMatch = await compare(credentials.password, user.password);
      if (!passwordMatch) {

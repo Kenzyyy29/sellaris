@@ -1,3 +1,4 @@
+
 import {NextResponse} from "next/server";
 import {getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";

@@ -55,7 +55,15 @@ const buttonHoverVariants = {
  },
 };
 
-export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: () => void}) {
+interface RegisterFormProps {
+ onRegisterComplete: (email: string, userId?: string) => void;
+ onOtpVerified?: () => void; // Tambahkan ini
+}
+
+export default function RegisterForm({
+ onRegisterComplete,
+ onOtpVerified,
+}: RegisterFormProps) {
  const [error, setError] = useState("");
  const [isLoading, setIsLoading] = useState(false);
  const [email, setEmail] = useState("");
@@ -98,6 +106,7 @@ export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: 
 
    setEmail(data.email);
    setShowOtp(true);
+   onRegisterComplete(data.email, result.userId);
   } catch (error: unknown) {
    setError(
     error instanceof Error ? error.message : "An unknown error occurred"
@@ -109,7 +118,7 @@ export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: 
 
  const handleOTPVerificationSuccess = () => {
   setShowOtp(false);
-  onRegisterComplete();
+  onOtpVerified?.();
  };
 
  if (showOtp) {

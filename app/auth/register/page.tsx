@@ -1,11 +1,5 @@
-import {Metadata} from "next";
-import RegisterPageWrapper from "@/components/layouts/auth/RegisterPageWrapper";
-
-export const metadata: Metadata = {
- title: "Register Sellaris - Solusi Bisnis yang Menyenangkan",
- description: "Platform manajemen bisnis dengan pengalaman yang memukau",
-};
+import RegistrationFlow from "@/components/layouts/auth/RegistrationFlow";
 
 export default function RegisterPage() {
- return <RegisterPageWrapper/>
+ return <RegistrationFlow />;
 }
