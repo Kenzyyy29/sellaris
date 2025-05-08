@@ -1,4 +1,4 @@
-
+// app/api/user/update-company/route.ts
 import {NextResponse} from "next/server";
 import {getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
@@ -15,7 +15,10 @@ export async function POST(request: Request) {
    updatedAt: new Date(),
   });
 
-  return NextResponse.json({success: true});
+  return NextResponse.json({
+   success: true,
+   companyData, // Kembalikan data yang baru disimpan
+  });
  } catch (error) {
   console.error("Error updating company data:", error);
   return NextResponse.json(

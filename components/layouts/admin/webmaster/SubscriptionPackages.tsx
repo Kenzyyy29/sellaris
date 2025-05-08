@@ -5,7 +5,10 @@ import {motion} from "framer-motion";
 import {FaBoxOpen, FaSearch, FaTrash, FaEdit, FaPlus} from "react-icons/fa";
 import DeletePackageModal from "./DeletePackageModal";
 import EditPackageModal from "./EditPackageModal";
-import {SubscriptionPackage, useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
+import {
+ SubscriptionPackage,
+ useSubscriptionPackages,
+} from "@/lib/hooks/useSubscriptionPackage";
 
 const containerVariants = {
  hidden: {opacity: 0, y: 20},
@@ -46,7 +49,8 @@ export default function SubscriptionPackagesPage() {
  const [searchTerm, setSearchTerm] = useState("");
  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
- const [selectedPackage, setSelectedPackage] = useState<SubscriptionPackage | null>(null);
+ const [selectedPackage, setSelectedPackage] =
+  useState<SubscriptionPackage | null>(null);
  const [isProcessing, setIsProcessing] = useState(false);
 
  const formatCurrency = (value: number) => {
@@ -116,16 +120,14 @@ export default function SubscriptionPackagesPage() {
 
  return (
   <motion.div
-   className="container mx-auto px-4 py-8 text-black"
+   className="container mx-auto px-4 py-8 text-gray-800"
    initial="hidden"
    animate="visible"
    variants={containerVariants}>
    <motion.div
     variants={itemVariants}
     className="mb-8">
-    <h1 className="text-3xl font-bold flex items-center">
-     <FaBoxOpen className="mr-2" /> Subscription Packages
-    </h1>
+    <h1 className="text-3xl font-bold flex items-center">Packages</h1>
     {error && <div className="mt-2 text-red-600">Error: {error}</div>}
    </motion.div>
 

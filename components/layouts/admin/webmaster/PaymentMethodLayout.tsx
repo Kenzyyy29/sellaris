@@ -134,16 +134,16 @@ const PaymentMethodLayout   = () => {
   <div className="container mx-auto px-4 py-8">
    <style>{scrollbarStyles}</style>
 
-   <div className="flex justify-between items-center mb-8">
-    <h1 className="text-2xl font-bold text-gray-800">
-     Manajemen Metode Pembayaran
+   <div className="flex justify-between items-center mb-8 text-gray-800">
+    <h1 className="text-3xl font-bold flex items-center">
+     Payment Methods
     </h1>
     <motion.button
      whileHover={{scale: 1.05}}
      whileTap={{scale: 0.95}}
      onClick={() => setIsAddModalOpen(true)}
      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
-     <FiPlus /> Tambah Metode
+     <FiPlus /> Add Method
     </motion.button>
    </div>
 

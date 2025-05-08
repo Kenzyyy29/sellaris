@@ -129,14 +129,14 @@ export default function SubscriptionTransactions() {
 
  return (
   <motion.div
-   className="container mx-auto px-4 py-8 text-black"
+   className="container mx-auto px-4 py-8 text-gray-800"
    initial="hidden"
    animate="visible"
    variants={containerVariants}>
    <motion.div
     variants={itemVariants}
     className="mb-8">
-    <h1 className="text-3xl font-bold">Subscription Transactions</h1>
+    <h1 className="text-3xl font-bold flex items-center">Transactions</h1>
     {error && <div className="mt-2 text-red-600">Error: {error}</div>}
    </motion.div>
 

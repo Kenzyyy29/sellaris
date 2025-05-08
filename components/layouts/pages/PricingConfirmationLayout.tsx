@@ -6,7 +6,7 @@ import {usePricingConfirmation} from "@/lib/hooks/usePricingConfirmation";
 import {FaCheck, FaArrowLeft, FaCreditCard, FaCircle} from "react-icons/fa";
 import Link from "next/link";
 import {motion} from "framer-motion";
-import {addDoc, collection, getFirestore} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
 import {useSession} from "next-auth/react";
 import RegisterForm from "@/components/core/modal/RegisterForm";
@@ -29,31 +29,52 @@ const PricingConfirmationLayout = () => {
  const packageId = searchParams.get("packageId");
  const {selectedPackage, paymentMethods, loading, error} =
   usePricingConfirmation(packageId || "");
-
  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
  const [isSubmitting, setIsSubmitting] = useState(false);
  const [step, setStep] = useState<"payment" | "register" | "company">(
   "payment"
  );
- const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
+const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
 
- useEffect(() => {
-  if (sessionStatus === "loading") return;
 
-  if (sessionStatus === "unauthenticated") {
-   router.push("/auth/login");
-   return;
+useEffect(() => {
+ if (sessionStatus === "loading") return;
+
+ if (sessionStatus === "unauthenticated") {
+  router.push("/auth/login");
+  return;
+ }
+
+ if (sessionStatus === "authenticated") {
+  if (session?.user?.companyData) {
+   setCompanyData(session.user.companyData);
+   setStep("payment");
+  } else {
+   const fetchCompanyData = async () => {
+    try {
+     if (!session?.user?.id) {
+      throw new Error("User ID not found");
+     }
+
+     const userDoc = await getDoc(doc(firestore, "users", session.user.id));
+     if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (userData.companyData) {
+       setCompanyData(userData.companyData);
+       setStep("payment");
+       return;
+      }
+     }
+     setStep("company");
+    } catch (error) {
+     console.error("Error fetching company data:", error);
+     setStep("company");
+    }
+   };
+   fetchCompanyData();
   }
-
-  if (sessionStatus === "authenticated") {
-   if (!session?.user?.companyData) {
-    setStep("company");
-   } else {
-    setStep("payment");
-    setCompanyData(session.user.companyData);
-   }
-  }
- }, [session, sessionStatus, router]);
+ }
+}, [session, sessionStatus, router]);
 
  const formatPrice = (price: number) => {
   return new Intl.NumberFormat("id-ID", {
@@ -71,6 +92,10 @@ const PricingConfirmationLayout = () => {
   setStep("company");
  };
 
+ const updateSession = async () => {
+  await fetch("/api/auth/session?update=true", {method: "GET"});
+ };
+
  const handleCompanySubmit = async (data: CompanyFormData) => {
   try {
    const response = await fetch("/api/user/update-company", {
@@ -84,9 +109,14 @@ const PricingConfirmationLayout = () => {
     }),
    });
 
+   const result = await response.json();
+
    if (!response.ok) throw new Error("Failed to save company data");
 
-   setCompanyData(data);
+   // Update session dengan data baru
+   await updateSession();
+
+   setCompanyData(result.companyData || data);
    setStep("payment");
   } catch (err) {
    console.error("Error saving company data:", err);
@@ -96,9 +126,13 @@ const PricingConfirmationLayout = () => {
  const handleSubmit = async () => {
   if (!selectedMethod || !selectedPackage) return;
 
+  // Gunakan companyData dari state atau session
   const finalCompanyData = companyData || session?.user?.companyData;
+
   if (!finalCompanyData) {
    console.error("Company data is required");
+   // Alternatif: force user to fill company data
+   setStep("company");
    return;
   }
 

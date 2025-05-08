@@ -15,7 +15,7 @@ declare module "next-auth" {
     companyNPWP: string;
     companyPhone: string;
     companyEmail: string;
-   }; // Tambahkan ini
+   };
   } & DefaultSession["user"];
  }
 

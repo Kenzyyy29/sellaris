@@ -9,7 +9,7 @@ import {doc, getDoc} from "firebase/firestore";
 
 const firestore = getFirestore(app);
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
  session: {
   strategy: "jwt",
   maxAge: 60 * 60, // 1 jam
