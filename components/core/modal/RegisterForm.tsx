@@ -12,6 +12,7 @@ import {
  FiLoader,
 } from "react-icons/fi";
 import {BsShieldLock} from "react-icons/bs";
+import { useRouter } from "next/navigation";
 
 const itemVariants = {
  hidden: {opacity: 0, y: 20},
@@ -61,6 +62,7 @@ export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: 
  const [email, setEmail] = useState("");
  const [showOtp, setShowOtp] = useState(false);
  const [acceptedTerms, setAcceptedTerms] = useState(false);
+ const {push} = useRouter();
 
  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -107,10 +109,10 @@ export default function RegisterForm({onRegisterComplete}: {onRegisterComplete: 
   }
  };
 
- const handleOTPVerificationSuccess = () => {
-  setShowOtp(false);
-  onRegisterComplete();
- };
+const handleOTPVerificationSuccess = () => {
+ setShowOtp(false);
+ push("/dashboard");
+};
 
  if (showOtp) {
   return (

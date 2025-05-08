@@ -10,7 +10,7 @@ import {addDoc, collection, doc, getDoc, getFirestore} from "firebase/firestore"
 import {app} from "@/lib/firebase/init";
 import {useSession} from "next-auth/react";
 import RegisterForm from "@/components/core/modal/RegisterForm";
-import CompanyForm from "@/components/core/modal/CompanyForm";
+
 
 interface CompanyFormData {
  companyName: string;
@@ -63,36 +63,6 @@ useEffect(() => {
   setStep("company");
  };
 
- const updateSession = async () => {
-  await fetch("/api/auth/session?update=true", {method: "GET"});
- };
-
- const handleCompanySubmit = async (data: CompanyFormData) => {
-  try {
-   const response = await fetch("/api/user/update-company", {
-    method: "POST",
-    headers: {
-     "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-     userId: session?.user?.id,
-     companyData: data,
-    }),
-   });
-
-   const result = await response.json();
-
-   if (!response.ok) throw new Error("Failed to save company data");
-
-   // Update session dengan data baru
-   await updateSession();
-
-   setCompanyData(result.companyData || data);
-   setStep("payment");
-  } catch (err) {
-   console.error("Error saving company data:", err);
-  }
- };
 
  const handleSubmit = async () => {
   if (!selectedMethod || !selectedPackage) return;
@@ -179,15 +149,6 @@ useEffect(() => {
   );
  }
 
- if (step === "company") {
-  return (
-   <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-    <CompanyForm
-     onSubmit={handleCompanySubmit}
-    />
-   </div>
-  );
- }
 
  return (
   <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
