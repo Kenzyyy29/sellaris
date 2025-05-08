@@ -1,5 +1,5 @@
 import {Metadata} from "next";
-import RegisterPageWrapper from "@/components/layouts/auth/RegisterPageWrapper";
+import RegisterForm from "@/components/core/modal/RegisterForm";
 
 export const metadata: Metadata = {
  title: "Register Sellaris - Solusi Bisnis yang Menyenangkan",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
- return <RegisterPageWrapper />;
+ return <RegisterForm />;
 }
