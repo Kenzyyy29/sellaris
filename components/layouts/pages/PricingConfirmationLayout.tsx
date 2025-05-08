@@ -38,43 +38,14 @@ const [companyData, setCompanyData] = useState<CompanyFormData | null>(null);
 
 
 useEffect(() => {
- if (sessionStatus === "loading") return;
-
  if (sessionStatus === "unauthenticated") {
-  router.push("/auth/login");
-  return;
+  setStep("register");
+ } else if (sessionStatus === "authenticated" && !session?.user?.companyData) {
+  setStep("company");
+ } else {
+  setStep("payment");
  }
-
- if (sessionStatus === "authenticated") {
-  if (session?.user?.companyData) {
-   setCompanyData(session.user.companyData);
-   setStep("payment");
-  } else {
-   const fetchCompanyData = async () => {
-    try {
-     if (!session?.user?.id) {
-      throw new Error("User ID not found");
-     }
-
-     const userDoc = await getDoc(doc(firestore, "users", session.user.id));
-     if (userDoc.exists()) {
-      const userData = userDoc.data();
-      if (userData.companyData) {
-       setCompanyData(userData.companyData);
-       setStep("payment");
-       return;
-      }
-     }
-     setStep("company");
-    } catch (error) {
-     console.error("Error fetching company data:", error);
-     setStep("company");
-    }
-   };
-   fetchCompanyData();
-  }
- }
-}, [session, sessionStatus, router]);
+}, [session, sessionStatus]);
 
  const formatPrice = (price: number) => {
   return new Intl.NumberFormat("id-ID", {
@@ -126,44 +97,34 @@ useEffect(() => {
  const handleSubmit = async () => {
   if (!selectedMethod || !selectedPackage) return;
 
-  // Gunakan companyData dari state atau session
-  const finalCompanyData = companyData || session?.user?.companyData;
+ setIsSubmitting(true);
+ try {
+  const transactionData = {
+   userId: session?.user?.id || "guest",
+   packageId: selectedPackage.id,
+   packageName: selectedPackage.name,
+   amount: selectedPackage.price,
+   status: "pending",
+   paymentMethod: selectedMethod,
+   createdAt: new Date(),
+   userEmail: session?.user?.email || "guest@example.com",
+   userName: session?.user?.name || "Guest User",
+   companyData: companyData || session?.user?.companyData || null,
+  };
 
-  if (!finalCompanyData) {
-   console.error("Company data is required");
-   // Alternatif: force user to fill company data
-   setStep("company");
-   return;
-  }
+  const transactionRef = await addDoc(
+   collection(firestore, "subscription_transactions"),
+   transactionData
+  );
 
-  setIsSubmitting(true);
-  try {
-   const transactionData = {
-    userId: session?.user?.id,
-    packageId: selectedPackage.id,
-    packageName: selectedPackage.name,
-    amount: selectedPackage.price,
-    status: "pending",
-    paymentMethod: selectedMethod,
-    createdAt: new Date(),
-    userEmail: session?.user?.email,
-    userName: session?.user?.name,
-    companyData: finalCompanyData,
-   };
-
-   const transactionRef = await addDoc(
-    collection(firestore, "subscription_transactions"),
-    transactionData
-   );
-
-   router.push(
-    `/pricing/confirmation/payment-instruction?transactionId=${transactionRef.id}`
-   );
-  } catch (err) {
-   console.error("Error creating transaction:", err);
-  } finally {
-   setIsSubmitting(false);
-  }
+  router.push(
+   `/pricing/confirmation/payment-instruction?transactionId=${transactionRef.id}`
+  );
+ } catch (err) {
+  console.error("Error creating transaction:", err);
+ } finally {
+  setIsSubmitting(false);
+ }
  };
 
  if (loading || sessionStatus === "loading") {
@@ -223,7 +184,6 @@ useEffect(() => {
    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <CompanyForm
      onSubmit={handleCompanySubmit}
-     initialData={session?.user?.companyData}
     />
    </div>
   );

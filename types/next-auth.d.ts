@@ -9,13 +9,7 @@ declare module "next-auth" {
    name?: string | null;
    email?: string | null;
    role?: string;
-   companyData?: {
-    companyName: string;
-    companyAddress: string;
-    companyNPWP: string;
-    companyPhone: string;
-    companyEmail: string;
-   };
+   companyData?: any;
   } & DefaultSession["user"];
  }
 
@@ -24,7 +18,7 @@ declare module "next-auth" {
   email: string;
   name: string;
   role: string;
-  companyData?: any; // Tambahkan ini
+  companyData?: any;
  }
 }
 
@@ -34,6 +28,6 @@ declare module "next-auth/jwt" {
   email: string;
   name: string;
   role: string;
-  companyData?: any; // Tambahkan ini
+  companyData?: any;
  }
 }

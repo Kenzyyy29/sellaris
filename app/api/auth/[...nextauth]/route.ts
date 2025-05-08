@@ -3,16 +3,11 @@ import {compare} from "bcryptjs";
 import {NextAuthOptions} from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import {getFirestore} from "firebase/firestore";
-import {app} from "@/lib/firebase/init";
-import {doc, getDoc} from "firebase/firestore";
 
-const firestore = getFirestore(app);
-
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
  session: {
   strategy: "jwt",
-  maxAge: 60 * 60, // 1 jam
+  maxAge: 60 * 60,
  },
  secret: process.env.NEXTAUTH_SECRET!,
  providers: [
@@ -32,8 +27,6 @@ export const authOptions: NextAuthOptions = {
     if (!user) {
      throw new Error("User tidak ditemukan");
     }
-
-    // Untuk OTP flow tanpa password
     if (!credentials.password && user.verified) {
      return {
       id: user.id,
@@ -42,8 +35,6 @@ export const authOptions: NextAuthOptions = {
       role: user.role,
      };
     }
-
-    // Untuk login biasa dengan password
     if (credentials.password) {
      const passwordMatch = await compare(credentials.password, user.password);
      if (!passwordMatch) {
@@ -55,19 +46,11 @@ export const authOptions: NextAuthOptions = {
      throw new Error("Akun belum terverifikasi");
     }
 
-    // Get company data from Firestore
-    let companyData = null;
-    const userDoc = await getDoc(doc(firestore, "users", user.id));
-    if (userDoc.exists()) {
-     companyData = userDoc.data().companyData;
-    }
-
     return {
      id: user.id,
      email: user.email,
      name: user.fullname,
      role: user.role,
-     companyData,
     };
    },
   }),
@@ -77,7 +60,6 @@ export const authOptions: NextAuthOptions = {
    if (user) {
     token.id = user.id;
     token.role = user.role;
-    token.companyData = user.companyData;
    }
    return token;
   },
@@ -85,7 +67,6 @@ export const authOptions: NextAuthOptions = {
    if (session.user) {
     session.user.id = token.id;
     session.user.role = token.role;
-    session.user.companyData = token.companyData;
    }
    return session;
   },

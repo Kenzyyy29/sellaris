@@ -121,46 +121,43 @@ export default function OtpVerification({
   }
  };
 
-const handleSubmit = async () => {
- setIsLoading(true);
- setError("");
+ const handleSubmit = async () => {
+  setIsLoading(true);
+  setError("");
 
- try {
-  const otpCode = otp.join("");
-  const response = await fetch("/api/auth/verify-otp", {
-   method: "POST",
-   headers: {
-    "Content-Type": "application/json",
-   },
-   body: JSON.stringify({email, otp: otpCode}),
-  });
+  try {
+   const otpCode = otp.join("");
+   const response = await fetch("/api/auth/verify-otp", {
+    method: "POST",
+    headers: {
+     "Content-Type": "application/json",
+    },
+    body: JSON.stringify({email, otp: otpCode}),
+   });
 
-  const data = await response.json();
+   const data = await response.json();
 
-  if (!response.ok) {
-   throw new Error(data.message || "Verification failed");
+   if (!response.ok) {
+    throw new Error(data.message || "Verification failed");
+   }
+
+   const signInResponse = await signIn("credentials", {
+    email,
+    redirect: false,
+   });
+
+   if (signInResponse?.error) {
+    throw new Error(signInResponse.error);
+   }
+
+   onVerificationSuccess();
+  } catch (err) {
+   const error = err as Error;
+   setError(error.message);
+  } finally {
+   setIsLoading(false);
   }
-
-  // Tambahkan signIn setelah verifikasi berhasil
-  const signInResult = await signIn("credentials", {
-   email,
-   redirect: false,
-  });
-
-  if (signInResult?.error) {
-   throw new Error(signInResult.error);
-  }
-
-  onVerificationSuccess();
- } catch (err) {
-  const error = err as Error;
-  setError(error.message);
-  setOtp(new Array(6).fill(""));
-  setActiveInput(0);
- } finally {
-  setIsLoading(false);
- }
-};
+ };
 
  return (
   <motion.div

@@ -7,7 +7,6 @@ import {
  FiFileText,
  FiPhone,
  FiMail,
- FiArrowRight,
 } from "react-icons/fi";
 
 interface CompanyData {
@@ -16,11 +15,6 @@ interface CompanyData {
  companyNPWP: string;
  companyPhone: string;
  companyEmail: string;
-}
-
-interface CompanyFormProps {
- onSubmit: (data: CompanyData) => void;
- initialData?: CompanyData;
 }
 
 const itemVariants = {
@@ -65,16 +59,14 @@ const buttonHoverVariants = {
  },
 };
 
-const CompanyForm = ({onSubmit, initialData}: CompanyFormProps) => {
- const [formData, setFormData] = useState<CompanyData>(
-  initialData || {
-   companyName: "",
-   companyAddress: "",
-   companyNPWP: "",
-   companyPhone: "",
-   companyEmail: "",
-  }
- );
+const CompanyForm = ({onSubmit}: {onSubmit: (data: CompanyData) => void}) => {
+ const [formData, setFormData] = useState<CompanyData>({
+  companyName: "",
+  companyAddress: "",
+  companyNPWP: "",
+  companyPhone: "",
+  companyEmail: "",
+ });
 
  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const {name, value} = e.target;
@@ -87,129 +79,92 @@ const CompanyForm = ({onSubmit, initialData}: CompanyFormProps) => {
  };
 
  return (
-  <div className="w-full max-w-md overflow-hidden">
-   <div className="p-8">
-    <motion.form
-     onSubmit={handleSubmit}
-     className="space-y-6"
-     variants={containerVariants}
-     initial="hidden"
-     animate="visible">
-     <motion.h2
-      className="text-2xl font-bold text-center text-gray-800 mb-8"
-      variants={itemVariants}>
-      Data Perusahaan
-     </motion.h2>
+  <motion.div
+   initial={{opacity: 0, y: 20}}
+   animate={{opacity: 1, y: 0}}
+   className="bg-white p-6 rounded-lg shadow-md">
+   <h2 className="text-xl font-bold mb-6 text-gray-800">Data Perusahaan</h2>
+   <form
+    onSubmit={handleSubmit}
+    className="space-y-4">
+    <div className="relative">
+     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <FiBriefcase className="text-gray-400" />
+     </div>
+     <input
+      name="companyName"
+      value={formData.companyName}
+      onChange={handleChange}
+      required
+      placeholder="Nama Perusahaan"
+      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+     />
+    </div>
 
-     <motion.div variants={itemVariants}>
-      <div className="relative">
-       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <FiBriefcase className="text-gray-400 text-lg" />
-       </div>
-       <motion.input
-        name="companyName"
-        value={formData.companyName}
-        onChange={handleChange}
-        required
-        placeholder="Nama Perusahaan"
-        className="pl-12 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-        whileFocus="focus"
-        variants={inputFocusVariants}
-       />
-      </div>
-     </motion.div>
+    <div className="relative">
+     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <FiMapPin className="text-gray-400" />
+     </div>
+     <input
+      name="companyAddress"
+      value={formData.companyAddress}
+      onChange={handleChange}
+      required
+      placeholder="Alamat Perusahaan"
+      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+     />
+    </div>
 
-     <motion.div variants={itemVariants}>
-      <div className="relative">
-       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <FiMapPin className="text-gray-400 text-lg" />
-       </div>
-       <motion.input
-        name="companyAddress"
-        value={formData.companyAddress}
-        onChange={handleChange}
-        required
-        placeholder="Alamat Perusahaan"
-        className="pl-12 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-        whileFocus="focus"
-        variants={inputFocusVariants}
-       />
-      </div>
-     </motion.div>
+    <div className="relative">
+     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <FiFileText className="text-gray-400" />
+     </div>
+     <input
+      name="companyNPWP"
+      value={formData.companyNPWP}
+      onChange={handleChange}
+      required
+      placeholder="NPWP Perusahaan"
+      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+     />
+    </div>
 
-     <motion.div variants={itemVariants}>
-      <div className="relative">
-       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <FiFileText className="text-gray-400 text-lg" />
-       </div>
-       <motion.input
-        name="companyNPWP"
-        value={formData.companyNPWP}
-        onChange={handleChange}
-        required
-        placeholder="NPWP Perusahaan"
-        className="pl-12 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-        whileFocus="focus"
-        variants={inputFocusVariants}
-       />
-      </div>
-     </motion.div>
+    <div className="relative">
+     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <FiPhone className="text-gray-400" />
+     </div>
+     <input
+      name="companyPhone"
+      value={formData.companyPhone}
+      onChange={handleChange}
+      required
+      placeholder="Telepon Perusahaan"
+      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+     />
+    </div>
 
-     <motion.div variants={itemVariants}>
-      <div className="relative">
-       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <FiPhone className="text-gray-400 text-lg" />
-       </div>
-       <motion.input
-        name="companyPhone"
-        value={formData.companyPhone}
-        onChange={handleChange}
-        required
-        placeholder="Telepon Perusahaan"
-        className="pl-12 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-        whileFocus="focus"
-        variants={inputFocusVariants}
-       />
-      </div>
-     </motion.div>
+    <div className="relative">
+     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <FiMail className="text-gray-400" />
+     </div>
+     <input
+      name="companyEmail"
+      type="email"
+      value={formData.companyEmail}
+      onChange={handleChange}
+      required
+      placeholder="Email Perusahaan"
+      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+     />
+    </div>
 
-     <motion.div variants={itemVariants}>
-      <div className="relative">
-       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <FiMail className="text-gray-400 text-lg" />
-       </div>
-       <motion.input
-        name="companyEmail"
-        type="email"
-        value={formData.companyEmail}
-        onChange={handleChange}
-        required
-        placeholder="Email Perusahaan"
-        className="pl-12 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700"
-        whileFocus="focus"
-        variants={inputFocusVariants}
-       />
-      </div>
-     </motion.div>
-
-     <motion.div variants={itemVariants}>
-      <motion.button
-       type="submit"
-       className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 px-6 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-       variants={buttonHoverVariants}
-       whileHover="hover"
-       whileTap="tap">
-       <span>Lanjutkan</span>
-       <motion.span
-        animate={{x: [0, 5, 0]}}
-        transition={{repeat: Infinity, duration: 1.5}}>
-        <FiArrowRight className="text-lg" />
-       </motion.span>
-      </motion.button>
-     </motion.div>
-    </motion.form>
-   </div>
-  </div>
+    <button
+     type="submit"
+     className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+     Lanjut ke Pembayaran
+    </button>
+   </form>
+  </motion.div>
  );
 };
 

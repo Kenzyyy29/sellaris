@@ -1,4 +1,3 @@
-// app/api/auth/verify-otp/route.ts
 import {verifyOTP} from "@/lib/utils/service";
 import {NextResponse} from "next/server";
 

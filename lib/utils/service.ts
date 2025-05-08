@@ -195,14 +195,21 @@ export async function verifyOTP(
  }
 }
 
-export async function login({email}: {email: string}) {
+export async function login({email}: {email: string}): Promise<{
+ id: string;
+ email: string;
+ fullname: string;
+ role: string;
+ password: string;
+ verified: boolean;
+} | null> {
  const q = query(collection(firestore, "users"), where("email", "==", email));
  const snapshot = await getDocs(q);
 
  if (snapshot.empty) return null;
 
  const doc = snapshot.docs[0];
- const data = doc.data();
+ const data = doc.data() as UserDocument;
 
  return {
   id: doc.id,
