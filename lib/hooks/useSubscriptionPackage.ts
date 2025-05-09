@@ -1,3 +1,4 @@
+"use client"
 import {useState, useEffect} from "react";
 import {
  collection,
@@ -17,7 +18,7 @@ export interface SubscriptionPackage {
  name: string;
  description: string;
  price: number;
- duration: number; // in days
+ duration: number; 
  durationType: "monthly" | "yearly";
  isRecommended: boolean;
  features: string[];

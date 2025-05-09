@@ -142,6 +142,7 @@ const adminLinks = [
   icon: <FaCog />,
   subItems: [
    {name: "Pengaturan Akun", path: "/admin/dashboard/settings/account"},
+   {name: "Paket Langganan", path: "/admin/dashboard/settings/subscription"},
    {name: "Toko/Outlet", path: "/admin/dashboard/settings/store"},
    {name: "Printer", path: "/admin/dashboard/settings/printers"},
    {name: "Perangkat", path: "/admin/dashboard/settings/devices"},

@@ -10,13 +10,18 @@ import {
  FaBolt,
  FaShieldAlt,
 } from "react-icons/fa";
-import {SubscriptionPackage, useSubscriptionPackages} from "@/lib/hooks/useSubscriptionPackage";
+import {
+ SubscriptionPackage,
+ useSubscriptionPackages,
+} from "@/lib/hooks/useSubscriptionPackage";
 import {useEffect, useState} from "react";
 import Link from "next/link";
 
 const PricingPageLayout = () => {
  const {packages, loading} = useSubscriptionPackages();
- const [activePackages, setActivePackages] = useState<SubscriptionPackage[]>([]);
+ const [activePackages, setActivePackages] = useState<SubscriptionPackage[]>(
+  []
+ );
 
  useEffect(() => {
   const filtered = packages.filter((pkg) => pkg.isActive);
@@ -103,7 +108,7 @@ const PricingPageLayout = () => {
      animate={{opacity: 1, y: 0}}
      transition={{duration: 0.6}}
      className="text-center mb-20">
-     <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+     <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl pt-10">
       Pilihan Paket Langganan
      </h1>
      <p className="mt-5 max-w-xl mx-auto text-xl text-gray-600">
@@ -183,15 +188,34 @@ const PricingPageLayout = () => {
              ))}
             </ul>
            </div>
-           {/* CTA Button */}
-           <Link href={`/pricing/confirmation?packageId=${pkg.id}`}>
-            <motion.button
-             whileHover={{scale: 1.02}}
-             whileTap={{scale: 0.98}}
-             className={`w-full py-3 px-6 rounded-lg text-lg font-semibold text-white shadow-md transition-colors ${theme.button}`}>
-             Mulai Sekarang
-            </motion.button>
-           </Link>
+           <div className="flex flex-col gap-2 items-center w-full">
+            {/* CTA Button */}
+            <Link
+             href={`/pricing/confirmation?packageId=${pkg.id}`}
+             className="w-full">
+             <motion.button
+              whileHover={{scale: 1.02}}
+              whileTap={{scale: 0.98}}
+              className={`w-full py-3 px-6 rounded-lg text-lg font-semibold text-white shadow-md transition-colors ${theme.button}`}>
+              Coba Gratis 14 Hari
+             </motion.button>
+            </Link>
+            <div className="flex gap-2 items-center w-full">
+             <hr className="border-black border w-full" />
+             <span>atau</span>
+             <hr className="border-black border w-full" />
+            </div>
+            <Link
+             href={`/pricing/confirmation?packageId=${pkg.id}`}
+             className="w-full">
+             <motion.button
+              whileHover={{scale: 1.02}}
+              whileTap={{scale: 0.98}}
+              className={`w-full py-3 px-6 rounded-lg text-lg font-semibold text-white shadow-md transition-colors ${theme.button}`}>
+              Mulai Langganan
+             </motion.button>
+            </Link>
+           </div>
           </div>
          </motion.div>
         </div>
