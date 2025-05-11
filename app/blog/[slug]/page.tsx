@@ -13,17 +13,8 @@ import Image from "next/image";
 
 const firestore = getFirestore(app);
 
-export interface PageProps {
- params: {
-  slug: string;
- };
- searchParams?: {
-  [key: string]: string | string[] | undefined;
- };
-}
-
-export default async function BlogSlugPage(props: PageProps) {
- const {slug} = props.params;
+export default async function BlogSlugPage({params}: {params: {slug: string}}) {
+ const {slug} = params;
 
  try {
   // Fetch post from Firestore
