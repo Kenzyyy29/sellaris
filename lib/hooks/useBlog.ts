@@ -28,6 +28,8 @@ export interface BlogPost {
     updatedAt?: Date | null;
 }
 
+type CleanablePostData = Partial<BlogPost> | Omit<BlogPost, 'id'>;
+
 export const useBlog = () => {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
@@ -35,9 +37,9 @@ export const useBlog = () => {
 
     const collectionName = "blog_posts";
 
-    const cleanData = (data: any) => {
-        const cleaned: Record<string, any> = { ...data };
-        Object.keys(cleaned).forEach(key => {
+    const cleanData = <T extends CleanablePostData>(data: T): T => {
+        const cleaned = { ...data };
+        (Object.keys(cleaned) as Array<keyof T>).forEach(key => {
             if (cleaned[key] === undefined) {
                 delete cleaned[key];
             }
@@ -145,6 +147,7 @@ export const useBlog = () => {
         posts,
         loading,
         error,
+        setError,
         addPost,
         updatePost,
         deletePost,
