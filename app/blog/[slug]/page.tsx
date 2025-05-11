@@ -13,7 +13,14 @@ import Image from "next/image";
 
 const firestore = getFirestore(app);
 
-export default async function BlogSlugPage({params}: {params: {slug: string}}) {
+interface PageProps {
+ params: {
+  slug: string;
+ };
+ searchParams?: {[key: string]: string | string[] | undefined};
+}
+
+export default async function BlogSlugPage({params}: PageProps) {
  const {slug} = params;
 
  try {
@@ -117,8 +124,8 @@ export default async function BlogSlugPage({params}: {params: {slug: string}}) {
 
      <article
       className="prose max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 
-                        prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-li:marker:text-gray-400
-                        prose-img:rounded-lg prose-img:shadow-md"
+                          prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-li:marker:text-gray-400
+                          prose-img:rounded-lg prose-img:shadow-md"
       dangerouslySetInnerHTML={{__html: post.content}}
      />
     </div>
