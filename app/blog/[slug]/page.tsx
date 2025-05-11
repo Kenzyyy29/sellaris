@@ -13,14 +13,17 @@ import Image from "next/image";
 
 const firestore = getFirestore(app);
 
-interface PageProps {
+export interface PageProps {
  params: {
   slug: string;
  };
+ searchParams?: {
+  [key: string]: string | string[] | undefined;
+ };
 }
 
-export default async function BlogSlug({params}: PageProps) {
- const {slug} = params;
+export default async function BlogSlugPage(props: PageProps) {
+ const {slug} = props.params;
 
  try {
   // Fetch post from Firestore
@@ -67,7 +70,6 @@ export default async function BlogSlug({params}: PageProps) {
   return (
    <div className="container mx-auto px-4 py-8 min-h-[100dvh] pt-[100px]">
     <div className="max-w-4xl mx-auto">
-     {/* Back button */}
      <Link
       href="/blog"
       className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors">
@@ -75,13 +77,11 @@ export default async function BlogSlug({params}: PageProps) {
       Kembali ke Daftar Blog
      </Link>
 
-     {/* Article header */}
      <header className="mb-8">
       <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
        {post.title}
       </h1>
 
-      {/* Metadata */}
       <div className="flex flex-wrap items-center text-sm text-gray-500 gap-4 mb-4">
        <span className="flex items-center">
         <FiUser className="mr-1.5" />
@@ -97,7 +97,6 @@ export default async function BlogSlug({params}: PageProps) {
        </span>
       </div>
 
-      {/* Featured image */}
       {post.featuredImage && (
        <div className="rounded-lg overflow-hidden mb-6 shadow-md">
         <Image
@@ -111,7 +110,6 @@ export default async function BlogSlug({params}: PageProps) {
        </div>
       )}
 
-      {/* Tags */}
       {post.tags && post.tags.length > 0 && (
        <div className="flex flex-wrap gap-2 mb-6">
         {post.tags.map((tag) => (
@@ -126,7 +124,6 @@ export default async function BlogSlug({params}: PageProps) {
       )}
      </header>
 
-     {/* Article content */}
      <article
       className="prose max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 
                         prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-li:marker:text-gray-400
