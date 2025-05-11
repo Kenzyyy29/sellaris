@@ -7,6 +7,7 @@ import {BlogPost} from "@/lib/hooks/useBlog";
 import {collection, getDocs, getFirestore} from "firebase/firestore";
 import {app} from "@/lib/firebase/init";
 import {FiCalendar, FiUser, FiTag} from "react-icons/fi";
+import Image from "next/image";
 
 const firestore = getFirestore(app);
 
@@ -100,7 +101,9 @@ const BlogPage = () => {
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       {post.featuredImage && (
        <div className="h-48 overflow-hidden">
-        <img
+        <Image
+         width={600}
+         height={600}
          src={post.featuredImage}
          alt={post.title}
          className="w-full h-full object-cover"

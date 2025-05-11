@@ -3,14 +3,7 @@
 
 import {useState} from "react";
 import {motion} from "framer-motion";
-import {
- FiPlus,
- FiEdit2,
- FiTrash2,
- FiEye,
- FiEyeOff,
- FiSave,
-} from "react-icons/fi";
+import {FiPlus, FiEdit2, FiTrash2, FiSave} from "react-icons/fi";
 import {useBlog, BlogPost} from "@/lib/hooks/useBlog";
 
 const BlogManagement = () => {
@@ -21,7 +14,6 @@ const BlogManagement = () => {
   addPost,
   updatePost,
   deletePost,
-  refresh,
  } = useBlog();
 
  const [isEditing, setIsEditing] = useState(false);

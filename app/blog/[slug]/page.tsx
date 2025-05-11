@@ -9,14 +9,11 @@ import {
 import {app} from "@/lib/firebase/init";
 import {FiCalendar, FiUser, FiTag, FiArrowLeft} from "react-icons/fi";
 import Link from "next/link";
+import Image from "next/image";
 
 const firestore = getFirestore(app);
 
-export default async function BlogDetailPage({
- params,
-}: {
- params: {slug: string};
-}) {
+export default async function BlogSlug({params}: {params: {slug: string}}) {
  const {slug} = params;
 
  try {
@@ -97,7 +94,9 @@ export default async function BlogDetailPage({
       {/* Featured image */}
       {post.featuredImage && (
        <div className="rounded-lg overflow-hidden mb-6 shadow-md">
-        <img
+        <Image
+         width={600}
+         height={600}
          src={post.featuredImage}
          alt={post.title}
          className="w-full h-auto object-cover"
