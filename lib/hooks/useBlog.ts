@@ -1,3 +1,4 @@
+// /lib/hooks/useBlog.ts
 import { useState, useEffect } from "react";
 import {
     collection,
@@ -13,7 +14,7 @@ import { app } from "@/lib/firebase/init";
 const firestore = getFirestore(app);
 
 export interface BlogPost {
-    id: string;
+    id?: string;
     title: string;
     slug: string;
     content: string;
@@ -22,9 +23,9 @@ export interface BlogPost {
     author: string;
     tags: string[];
     isPublished: boolean;
-    publishedAt?: Date;
-    createdAt?: Date;
-    updatedAt?: Date;
+    publishedAt?: Date | null;
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
 }
 
 export const useBlog = () => {
@@ -33,6 +34,16 @@ export const useBlog = () => {
     const [error, setError] = useState<string | null>(null);
 
     const collectionName = "blog_posts";
+
+    const cleanData = (data: any) => {
+        const cleaned: Record<string, any> = { ...data };
+        Object.keys(cleaned).forEach(key => {
+            if (cleaned[key] === undefined) {
+                delete cleaned[key];
+            }
+        });
+        return cleaned;
+    };
 
     const fetchPosts = async () => {
         try {
@@ -52,7 +63,7 @@ export const useBlog = () => {
                     author: data.author,
                     tags: data.tags || [],
                     isPublished: data.isPublished,
-                    publishedAt: data.publishedAt?.toDate(),
+                    publishedAt: data.publishedAt?.toDate() || null,
                     createdAt: data.createdAt?.toDate(),
                     updatedAt: data.updatedAt?.toDate(),
                 });
@@ -68,15 +79,16 @@ export const useBlog = () => {
         }
     };
 
-    const addPost = async (postData: Omit<BlogPost, "id">) => {
+    const addPost = async (postData: Omit<BlogPost, 'id'>) => {
         try {
             setLoading(true);
-            const newPost = {
+            const newPost = cleanData({
                 ...postData,
                 isPublished: postData.isPublished || false,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-            };
+                publishedAt: postData.isPublished ? new Date() : null
+            });
 
             await addDoc(collection(firestore, collectionName), newPost);
             await fetchPosts();
@@ -92,10 +104,15 @@ export const useBlog = () => {
     const updatePost = async (id: string, postData: Partial<BlogPost>) => {
         try {
             setLoading(true);
-            await updateDoc(doc(firestore, collectionName, id), {
+            const cleanedData = cleanData({
                 ...postData,
                 updatedAt: new Date(),
+                publishedAt: postData.isPublished
+                    ? postData.publishedAt || new Date()
+                    : null
             });
+
+            await updateDoc(doc(firestore, collectionName, id), cleanedData);
             await fetchPosts();
             return { success: true };
         } catch (err) {
@@ -104,10 +121,6 @@ export const useBlog = () => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const togglePostStatus = async (id: string, isPublished: boolean) => {
-        return updatePost(id, { isPublished });
     };
 
     const deletePost = async (id: string) => {
@@ -134,7 +147,6 @@ export const useBlog = () => {
         error,
         addPost,
         updatePost,
-        togglePostStatus,
         deletePost,
         refresh: fetchPosts,
     };

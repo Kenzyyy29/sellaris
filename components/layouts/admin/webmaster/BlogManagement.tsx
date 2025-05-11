@@ -1,3 +1,4 @@
+// components/layouts/admin/webmaster/BlogManagement.tsx
 "use client";
 
 import {useState} from "react";
@@ -10,17 +11,15 @@ import {
  FiEyeOff,
  FiSave,
 } from "react-icons/fi";
-import {useBlog} from "@/lib/hooks/useBlog";
-import {BlogPost} from "@/lib/hooks/useBlog";
+import {useBlog, BlogPost} from "@/lib/hooks/useBlog";
 
 const BlogManagement = () => {
  const {
   posts,
   loading,
-  error,
+  error: blogError,
   addPost,
   updatePost,
-  togglePostStatus,
   deletePost,
   refresh,
  } = useBlog();
@@ -28,6 +27,9 @@ const BlogManagement = () => {
  const [isEditing, setIsEditing] = useState(false);
  const [currentPost, setCurrentPost] = useState<Partial<BlogPost> | null>(null);
  const [isFormOpen, setIsFormOpen] = useState(false);
+ const [successMessage, setSuccessMessage] = useState<string | null>(null);
+ const [isSubmitting, setIsSubmitting] = useState(false);
+ const [localError, setLocalError] = useState<string | null>(null);
 
  const handleAddNew = () => {
   setCurrentPost({
@@ -50,19 +52,14 @@ const BlogManagement = () => {
   setIsFormOpen(true);
  };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+ const handlePublishChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   if (!currentPost) return;
 
-  const result = isEditing
-   ? await updatePost(currentPost.id!, currentPost)
-   : await addPost(currentPost as Omit<BlogPost, "id">);
-
-  if (result.success) {
-   setIsFormOpen(false);
-   setCurrentPost(null);
-   refresh();
-  }
+  setCurrentPost({
+   ...currentPost,
+   isPublished: e.target.checked,
+   publishedAt: e.target.checked ? new Date() : null,
+  });
  };
 
  const handleInputChange = (
@@ -79,6 +76,55 @@ const BlogManagement = () => {
   setCurrentPost({...currentPost, tags});
  };
 
+ const validatePost = (post: Partial<BlogPost>) => {
+  if (!post.title || !post.slug || !post.content || !post.author) {
+   throw new Error("Please fill all required fields");
+  }
+ };
+
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!currentPost) return;
+
+  try {
+   setIsSubmitting(true);
+   setLocalError(null); // Reset error sebelum submit
+   validatePost(currentPost);
+
+   const postData = {
+    title: currentPost.title,
+    slug: currentPost.slug,
+    content: currentPost.content,
+    excerpt: currentPost.excerpt,
+    featuredImage: currentPost.featuredImage || "",
+    author: currentPost.author,
+    tags: currentPost.tags || [],
+    isPublished: currentPost.isPublished || false,
+    publishedAt: currentPost.isPublished
+     ? currentPost.publishedAt || new Date()
+     : null,
+    updatedAt: new Date(),
+   };
+
+   if (isEditing && currentPost.id) {
+    await updatePost(currentPost.id, postData);
+    setSuccessMessage("Post updated successfully!");
+   } else {
+    await addPost(postData as Omit<BlogPost, "id">);
+    setSuccessMessage("Post created successfully!");
+   }
+
+   setTimeout(() => setSuccessMessage(null), 3000);
+   setIsFormOpen(false);
+   setCurrentPost(null);
+  } catch (err) {
+   console.error("Error saving post:", err);
+   setLocalError(err instanceof Error ? err.message : "Failed to save post");
+  } finally {
+   setIsSubmitting(false);
+  }
+ };
+
  return (
   <div className="container mx-auto px-4 py-8">
    <motion.div
@@ -90,12 +136,30 @@ const BlogManagement = () => {
     <p className="text-gray-600">Manage your blog posts here</p>
    </motion.div>
 
-   {error && (
+   {blogError && (
     <motion.div
      initial={{opacity: 0}}
      animate={{opacity: 1}}
      className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-     {error}
+     {blogError}
+    </motion.div>
+   )}
+
+   {localError && (
+    <motion.div
+     initial={{opacity: 0}}
+     animate={{opacity: 1}}
+     className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+     {localError}
+    </motion.div>
+   )}
+
+   {successMessage && (
+    <motion.div
+     initial={{opacity: 0}}
+     animate={{opacity: 1}}
+     className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+     {successMessage}
     </motion.div>
    )}
 
@@ -120,7 +184,7 @@ const BlogManagement = () => {
      <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
        <div>
-        <label className="block text-gray-700 mb-2">Title</label>
+        <label className="block text-gray-700 mb-2">Title*</label>
         <input
          type="text"
          name="title"
@@ -131,7 +195,7 @@ const BlogManagement = () => {
         />
        </div>
        <div>
-        <label className="block text-gray-700 mb-2">Slug</label>
+        <label className="block text-gray-700 mb-2">Slug*</label>
         <input
          type="text"
          name="slug"
@@ -144,7 +208,7 @@ const BlogManagement = () => {
       </div>
 
       <div className="mb-4">
-       <label className="block text-gray-700 mb-2">Excerpt</label>
+       <label className="block text-gray-700 mb-2">Excerpt*</label>
        <textarea
         name="excerpt"
         value={currentPost.excerpt || ""}
@@ -156,7 +220,7 @@ const BlogManagement = () => {
       </div>
 
       <div className="mb-4">
-       <label className="block text-gray-700 mb-2">Content</label>
+       <label className="block text-gray-700 mb-2">Content*</label>
        <textarea
         name="content"
         value={currentPost.content || ""}
@@ -179,7 +243,7 @@ const BlogManagement = () => {
         />
        </div>
        <div>
-        <label className="block text-gray-700 mb-2">Author</label>
+        <label className="block text-gray-700 mb-2">Author*</label>
         <input
          type="text"
          name="author"
@@ -208,9 +272,7 @@ const BlogManagement = () => {
         type="checkbox"
         id="isPublished"
         checked={currentPost.isPublished || false}
-        onChange={(e) =>
-         setCurrentPost({...currentPost, isPublished: e.target.checked})
-        }
+        onChange={handlePublishChange}
         className="mr-2"
        />
        <label
@@ -226,16 +288,43 @@ const BlogManagement = () => {
         whileTap={{scale: 0.98}}
         type="button"
         onClick={() => setIsFormOpen(false)}
-        className="px-4 py-2 border rounded-md text-gray-700">
+        className="px-4 py-2 border rounded-md text-gray-700"
+        disabled={isSubmitting}>
         Cancel
        </motion.button>
        <motion.button
         whileHover={{scale: 1.02}}
         whileTap={{scale: 0.98}}
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center">
-        <FiSave className="mr-2" />
-        {isEditing ? "Update" : "Save"}
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center"
+        disabled={isSubmitting}>
+        {isSubmitting ? (
+         <>
+          <svg
+           className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+           xmlns="http://www.w3.org/2000/svg"
+           fill="none"
+           viewBox="0 0 24 24">
+           <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"></circle>
+           <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Processing...
+         </>
+        ) : (
+         <>
+          <FiSave className="mr-2" />
+          {isEditing ? "Update" : "Save"}
+         </>
+        )}
        </motion.button>
       </div>
      </form>
@@ -304,14 +393,6 @@ const BlogManagement = () => {
             <motion.button
              whileHover={{scale: 1.1}}
              whileTap={{scale: 0.9}}
-             onClick={() => togglePostStatus(post.id, !post.isPublished)}
-             className="text-gray-600 hover:text-gray-900"
-             title={post.isPublished ? "Unpublish" : "Publish"}>
-             {post.isPublished ? <FiEyeOff /> : <FiEye />}
-            </motion.button>
-            <motion.button
-             whileHover={{scale: 1.1}}
-             whileTap={{scale: 0.9}}
              onClick={() => handleEdit(post)}
              className="text-blue-600 hover:text-blue-900"
              title="Edit">
@@ -320,7 +401,13 @@ const BlogManagement = () => {
             <motion.button
              whileHover={{scale: 1.1}}
              whileTap={{scale: 0.9}}
-             onClick={() => deletePost(post.id)}
+             onClick={() => {
+              if (
+               window.confirm("Are you sure you want to delete this post?")
+              ) {
+               deletePost(post.id!);
+              }
+             }}
              className="text-red-600 hover:text-red-900"
              title="Delete">
              <FiTrash2 />
